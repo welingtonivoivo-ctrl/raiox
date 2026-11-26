@@ -79,19 +79,30 @@ type Ajuste = {
   origem: 'lighthouse' | 'axe' | 'regra' | 'ia'
   titulo: string
   explicacao: string
+  saibaMais?: string                 // página com mais explicação (Lighthouse)
   gravidade: 'alta' | 'media' | 'baixa'
   impacto: number                    // usado para ordenar (fórmula no 02-TRD §7)
-  ganho?: string                     // "~+8 de desempenho" / "economiza 1,2 s"
+  ganho?: string                     // "ganha ~+8 de desempenho no celular" / "Economia estimada de 27 KiB"
   baseLegal?: string                 // "LGPD art. 8º" / "Decreto 7.962/2013 art. 2º"
-  lugares: Lugar[]
+  lugares: Lugar[]                   // no máximo 10 (LIMITE_LUGARES)
+  outrosLugares?: number             // quantos ficaram de fora ("…e mais N")
+  detalhes?: string[]                // o que o teste mediu, quando não há elemento nem arquivo ("Execução de scripts: 1.157 ms")
+  paginasAfetadas: number            // desempate na ordem e número no cartão
   textoIA: string
   estado: 'falha' | 'atencao' | 'naoConferido'
 }
 type Lugar =
-  | { tipo: 'pagina'; endereco: string; perfil?: 'celular' | 'computador'; seletor?: string; trecho?: string }
+  | { tipo: 'pagina'; endereco: string; perfil?: 'celular' | 'computador'; seletor?: string
+      recurso?: string               // arquivo do site envolvido (script, imagem, fonte)
+      trecho?: string
+      motivo?: string }              // por que o elemento falhou (ex.: cores e proporção do contraste, em inglês, vindo do axe)
   | { tipo: 'arquivo'; caminho: string; linha?: number; trecho?: string }   // caminho relativo ao repo
 ```
-`trecho` passa por limpeza: valores que parecem segredo viram `••••`, e cortado em 300 caracteres. Nos achados de segurança, o valor da chave aparece só como os primeiros 8 caracteres + `…` e o serviço provável (`servicoProvavel: 'OpenAI'`); o valor inteiro nunca é gravado em `resultado.json`, relatório, histórico ou registros.
+O mesmo lugar medido no celular e no computador vira um só, sem `perfil`.
+
+**Itens do Lighthouse (Etapa 2)**: viram `Ajuste` as auditorias das 4 categorias com nota abaixo de 0,9, menos as medidas (com curva de nota), as do grupo escondido, as informativas, manuais e as que não se aplicam. No desempenho, `impacto` = pontos que a nota sobe se a economia por medida (`metricSavings`) se confirmar, pela mesma curva log-normal do Lighthouse, limitado ao que falta para 100; nos outros blocos, peso da auditoria ÷ soma dos pesos × 100 × (1 − nota). Gravidade: ≥ 5 pontos alta, ≥ 1 média, senão baixa. No desempenho, "falha" só quando devolve pelo menos 1 ponto. Os motivos do cache de voltar/avançar que vêm do próprio navegador de teste (desligado por linha de comando) são descartados. Títulos e explicações vêm do Lighthouse em português; `pacotes/textos` pode trocar o título e acrescentar uma dica por auditoria.
+
+`trecho`, `motivo`, `detalhes` e `recurso` passam por limpeza: valores que parecem segredo viram `••••` (nos endereços, só os parâmetros sensíveis, como `token=`), e trechos são cortados em 300 caracteres. Nos achados de segurança, o valor da chave aparece só como os primeiros 8 caracteres + `…` e o serviço provável (`servicoProvavel: 'OpenAI'`); o valor inteiro nunca é gravado em `resultado.json`, relatório, histórico ou registros.
 
 `ctx` da segurança traz também: lista de scripts e `.map` baixados de cada página (só o texto, apagado ao fim da análise) e as respostas dos endereços da lista de arquivos expostos (código de resposta + primeiros 512 bytes).
 
@@ -121,7 +132,9 @@ Montado a partir dos textos com as informações do achado:
 ```
 No meu site {site}, a ferramenta Raio-X encontrou: {titulo}.
 Onde: {lugares, um por linha}.
+{O que o teste mediu: detalhes, um por linha — quando houver}
 Por que importa: {explicacao}{ — base legal: baseLegal}.
+{Mais detalhes: saibaMais — quando houver}
 O que eu preciso: corrija esse problema no meu projeto sem mudar o comportamento do resto.
 Explique o que mudou e como conferir que deu certo.
 {dica específica da regra, quando houver}

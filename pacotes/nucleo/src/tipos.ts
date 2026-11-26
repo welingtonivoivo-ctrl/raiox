@@ -37,6 +37,51 @@ export type OpcoesMedicao = {
   precisao: boolean
   /** Permite http://localhost e parecidos (para testar o próprio projeto rodando). */
   permitirLocal: boolean
+  /** Pasta para guardar o relatório original do Lighthouse de cada rodada (lighthouse-<n>-<perfil>.json). */
+  pastaBruta?: string
+}
+
+/** Blocos da lista "O que ajustar". Os legais e de código chegam nas Etapas 5 e 6. */
+export type BlocoAjuste =
+  | 'desempenho' | 'acessibilidade' | 'boasPraticas' | 'busca' | 'seguranca'
+  | 'cookies' | 'lgpd' | 'lbi' | 'cdc' | 'marcoCivil' | 'codigo'
+
+export type Lugar =
+  | {
+      tipo: 'pagina'
+      endereco: string
+      perfil?: Perfil
+      seletor?: string
+      /** Arquivo do site envolvido (script, imagem, fonte…). */
+      recurso?: string
+      trecho?: string
+      /** Por que o elemento falhou (ex.: cores e proporção do contraste). */
+      motivo?: string
+    }
+  | { tipo: 'arquivo'; caminho: string; linha?: number; trecho?: string }
+
+/** Um item da lista "O que ajustar" (docs/05-BACKEND.md §3). */
+export type Ajuste = {
+  id: string
+  bloco: BlocoAjuste
+  origem: 'lighthouse' | 'axe' | 'regra' | 'ia'
+  titulo: string
+  explicacao: string
+  /** Página com mais explicação (vinda do Lighthouse). */
+  saibaMais?: string
+  gravidade: 'alta' | 'media' | 'baixa'
+  /** Usado para ordenar (docs/02-TRD.md §7). Nos itens do Lighthouse = pontos de nota que se ganha. */
+  impacto: number
+  ganho?: string
+  baseLegal?: string
+  lugares: Lugar[]
+  /** Quantos lugares ficaram de fora da lista (limite por item). */
+  outrosLugares?: number
+  /** O que o teste mediu, quando não há elemento nem arquivo (ex.: "Avaliação de script: 1.200 ms"). */
+  detalhes?: string[]
+  paginasAfetadas: number
+  textoIA: string
+  estado: 'falha' | 'atencao' | 'naoConferido'
 }
 
 export type ResultadoMedicao = {
@@ -52,4 +97,6 @@ export type ResultadoMedicao = {
   site: string
   quando: string
   paginas: ResultadoPagina[]
+  /** Lista "O que ajustar", do maior impacto ao menor. */
+  ajustes: Ajuste[]
 }
