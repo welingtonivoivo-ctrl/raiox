@@ -1,0 +1,27 @@
+{
+  "name": "@raiox/nucleo",
+  "version": "0.0.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "tipos": "tsc --noEmit -p .",
+    "teste": "vitest run",
+    "medir": "tsx scripts/medir.ts"
+  },
+  "dependencies": {
+    "@raiox/textos": "workspace:*",
+    "lighthouse": "13.6.0",
+    "playwright-core": "1.65.1"
+  },
+  "devDependencies": {
+    "@types/node": "22",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.1.2"
+  }
+}

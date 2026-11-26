@@ -1,0 +1,12 @@
+{
+  "name": "raiox-monorepo",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "packageManager": "pnpm@9.12.0",
+  "engines": { "node": ">=22.19" },
+  "scripts": {
+    "tipos": "pnpm -r run tipos",
+    "teste": "pnpm -r run teste",
+    "medir": "pnpm --filter @raiox/nucleo run medir"
+  }
+}

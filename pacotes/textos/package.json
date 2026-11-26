@@ -1,0 +1,8 @@
+{
+  "name": "@raiox/textos",
+  "version": "0.0.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "exports": { "./pt-BR.json": "./pt-BR.json" }
+}
