@@ -28,7 +28,7 @@ raiox/
 │  ├─ nucleo/                  ← motor: Lighthouse, Playwright, regras, IA, relatório
 │  │  ├─ src/medir/            ← roda o Lighthouse (celular e computador)
 │  │  ├─ src/navegar/          ← login, sessão, descoberta de páginas
-│  │  ├─ src/regras/           ← uma pasta por bloco: cookies, lgpd, lbi, cdc, marco-civil, codigo
+│  │  ├─ src/regras/           ← uma pasta por bloco: seguranca, cookies, lgpd, lbi, cdc, marco-civil, codigo
 │  │  ├─ src/ia/               ← provedores de IA e montagem dos pedidos
 │  │  ├─ src/ajustes/          ← junta tudo na lista "O que ajustar" e gera os textos para IA
 │  │  └─ src/relatorio/        ← HTML/PDF/JSON e o arquivo de textos
@@ -66,7 +66,7 @@ Medidas usadas (nomes do Lighthouse → nome no Raio-X): `first-contentful-paint
 
 ## 5. Regras (conferências)
 
-Cada regra é um arquivo com: identificador, bloco (cookies/lgpd/lbi/cdc/marco-civil/codigo), base legal (artigo), modo (superfície/completo), gravidade (alta/média/baixa), função de conferência e modelo de texto para a IA. Contribuir = criar um arquivo novo + um teste com página de exemplo.
+Cada regra é um arquivo com: identificador, bloco (seguranca/cookies/lgpd/lbi/cdc/marco-civil/codigo), base legal (artigo), modo (superfície/completo), gravidade (alta/média/baixa), função de conferência e modelo de texto para a IA. Contribuir = criar um arquivo novo + um teste com página de exemplo.
 
 Exemplos de regras da superfície:
 - **cookies.rastreador-antes-do-aceite**: grava os pedidos de rede antes de qualquer clique; se houver pedido a domínios de rastreio conhecidos (lista aberta no repositório) → falha.
@@ -74,27 +74,50 @@ Exemplos de regras da superfície:
 - **lgpd.politica-privacidade**: link com "privacidade" no rodapé ou menu, e a página abre → cumpre.
 - **cdc.identificacao**: procura CNPJ (formato `00.000.000/0000-00` com dígito verificador válido) ou CPF e endereço no rodapé/páginas "sobre"/"termos" → falha se não achar em loja (página com preço).
 - **cdc.arrependimento**: em página com preço/carrinho, procura texto sobre 7 dias / arrependimento → atenção se não achar.
-- **marco-civil.cabecalhos**: confere HTTPS, `Strict-Transport-Security`, `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy`.
+- **seguranca.cabecalhos**: confere HTTPS, `Strict-Transport-Security`, `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy`.
+- **marco-civil.https**: páginas com dados pessoais (cadastro, perfil) servidas só por HTTPS.
 - **lbi.***: resultado do axe-core + acessibilidade do Lighthouse, agrupados por critério WCAG 2.2 / eMAG.
 
-Regras do modo completo (lendo a pasta do repositório, sem IA):
-- **codigo.segredos**: procura chaves e senhas no código e no histórico do git (padrões abertos, no estilo do gitleaks); mostra só o começo do valor.
-- **codigo.dependencias**: roda `npm audit --json` / `pnpm audit --json` (ou equivalente do gerenciador achado) quando disponível.
-- **codigo.dados-pessoais-em-log**: CPF, e-mail ou telefone indo para `console.log`/logs.
+### 5.1 Regras de segurança (nota própria)
+
+**Superfície** (site no ar):
+- **seguranca.chaves-no-site**: baixa os scripts que cada página carrega (e os mapas de código `.map`, quando o site os entrega) e passa os mesmos padrões de segredo do repositório. Chaves que **são feitas para ficar públicas** (chave pública do Supabase, chave de navegador do Firebase/Google Maps, chave publicável do Stripe `pk_`) não contam como falha; viram "atenção" só se vierem junto de um sinal de risco (ex.: Firebase com regras abertas no modo completo).
+- **seguranca.arquivos-expostos**: com `souDono`, abre uma lista fixa e curta de endereços (`/.env`, `/.env.local`, `/.git/config`, `/.git/HEAD`, `/backup.sql`, `/dump.sql`, `/db.sqlite`, `/.DS_Store`, `/wp-config.php.bak`, `/phpinfo.php`) — só pedidos de leitura, 1 por segundo. Falha se a resposta for 200 **e** o conteúdo tiver a cara do arquivo (ex.: `.env` com linhas `NOME=valor`; `.git/HEAD` com `ref:`) — evita acusar sites que respondem 200 para tudo.
+- **seguranca.cookies-sessao**: cookies que parecem de sessão sem `Secure`, `HttpOnly` ou `SameSite`.
+- **seguranca.conteudo-misto**: página HTTPS carregando algo por HTTP.
+- **seguranca.mapas-de-codigo**: `.map` públicos em produção (atenção: entregam o código-fonte).
+
+**Completo** (repositório, sem IA):
+- **seguranca.segredos**: chaves e senhas no código **e no histórico do git** (padrões abertos, no estilo do gitleaks: OpenAI, Anthropic, AWS, GitHub, Stripe secreta, Discord, chave de serviço do Supabase, chave privada, endereço de banco com senha `protocolo://usuario:senha@`). Mostra só o começo do valor e o serviço provável. Segredo achado só no histórico vira "falha: troque a chave" (apagar o arquivo não basta).
+- **seguranca.env-no-git**: `.env` com valores versionado, ou ausente do `.gitignore`.
+- **seguranca.banco-consulta-montada**: consultas SQL montadas juntando texto com variáveis (concatenação ou modelo de texto dentro de `query`/`execute`/`raw`, sem parâmetros) em JS/TS, Python, PHP, Lua.
+- **seguranca.banco-senha-no-codigo**: endereço de conexão com senha escrito no código; senha padrão ou vazia (`root`/vazio, `postgres`/`postgres`, `sa`) em arquivos de configuração e `docker-compose`.
+- **seguranca.supabase-rls**: migrações SQL que criam tabela sem `enable row level security`; chave `service_role` em código que vai para o navegador.
+- **seguranca.firebase-regras**: `firestore.rules` / `database.rules.json` / `storage.rules` com leitura ou escrita liberada para todos.
+- **seguranca.dependencias**: roda `npm audit --json` / `pnpm audit --json` (ou equivalente do gerenciador achado) quando disponível.
+- **seguranca.dados-pessoais-em-log**: CPF, e-mail ou telefone indo para `console.log`/logs.
+
+O Raio-X **não conecta no banco** e não tenta invadir nada: só lê código, configuração e endereços públicos.
+
+### 5.2 Outras regras do modo completo
 - **codigo.registros-de-acesso** (Marco Civil art. 15): procura guarda de IP + data/hora de acesso; se não achar → "não deu para conferir, verifique".
 - **codigo.cookies-sem-consentimento**: gravação de cookie de rastreio fora do fluxo de consentimento.
 - **codigo.acessibilidade-jsx**: imagens sem `alt`, botões sem texto em arquivos React/Vue/Svelte/HTML.
 
 Pastas sempre ignoradas: `node_modules`, `.git` (exceto na busca de segredos no histórico), `dist`, `build`, `.next`, arquivos acima de 1 MB.
 
-## 6. Notas dos blocos legais
+## 6. Notas dos blocos legais e de segurança
 Nota = 100 − soma das penalidades (alta 25, média 10, baixa 3), mínimo 0. "Não deu para conferir" não penaliza, mas aparece. Fórmula num único arquivo, fácil de ajustar por contribuição.
+
+Segurança usa a mesma fórmula, com duas regras a mais:
+- **chave secreta exposta no site no ar** ou **arquivo `.env`/banco exposto** → nota máxima 20, seja qual for o resto (é o tipo de falha que leva a invasão no mesmo dia);
+- no modo superfície a nota leva a etiqueta "parcial (sem o código)", porque banco e histórico do git não foram olhados.
 
 ## 7. Ordem da lista "O que ajustar"
 Pontuação de impacto de cada item:
 - itens de desempenho: economia estimada pelo Lighthouse (milissegundos) convertida em pontos de nota;
 - outras categorias do Lighthouse: peso da auditoria na nota × (1 − nota da auditoria);
-- itens legais e de código: gravidade (alta 30, média 15, baixa 5).
+- itens de segurança, legais e de código: gravidade (alta 30, média 15, baixa 5); chave secreta ou arquivo exposto no site no ar = 100 (sempre no topo da lista).
 Empate: vale primeiro o que aparece em mais páginas.
 
 ## 8. Análise inteligente (IA)

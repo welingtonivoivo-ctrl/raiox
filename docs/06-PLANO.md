@@ -28,16 +28,18 @@
 - Decidir o compartilhamento de sessão entre app e linha de comando (05-BACKEND §8).
 - **Conferir**: entrar no Street Server com a conta de teste; descobrir e medir ≥ 10 páginas fechadas; conferir no registro que nenhum endereço perigoso foi aberto; conferir que o arquivo da sessão não é legível sem o cofre.
 
-## Etapa 5 — Conferências legais da superfície
-- Regras de Cookies, LGPD, Acessibilidade (axe-core + Lighthouse, agrupado por WCAG 2.2/eMAG), Defesa do Consumidor, Marco Civil + cabeçalhos.
+## Etapa 5 — Segurança e conferências legais da superfície
+- **Segurança no site no ar**: chaves nos scripts e mapas de código, arquivos expostos (`/.env`, `/.git`, cópias do banco), cookies de sessão, conteúdo misto, cabeçalhos; nota de Segurança "parcial" e aviso vermelho.
+- Regras de Cookies, LGPD, Acessibilidade (axe-core + Lighthouse, agrupado por WCAG 2.2/eMAG), Defesa do Consumidor, Marco Civil.
 - Lista aberta de domínios de rastreio; notas dos blocos; aviso legal.
 - Páginas de exemplo que falham e que cumprem cada regra.
 - **Conferir**: todos os testes de regra passam; rodar contra o Street Server e uma loja de exemplo e revisar cada achado com o dono (falso positivo vira correção da regra).
 
-## Etapa 6 — Modo completo: regras do código
-- Segredos (código + histórico do git), dependências com falha conhecida, dados pessoais em registros, registros de acesso, cookies sem consentimento, acessibilidade em JSX/HTML.
+## Etapa 6 — Modo completo: segurança do código e do banco + outras regras
+- **Segurança**: segredos (código + histórico do git), `.env` versionado, consultas ao banco montadas juntando texto, senha do banco no código e senhas padrão, Supabase sem regras de acesso / chave de serviço exposta, Firebase com regras abertas, dependências com falha conhecida, dados pessoais em registros.
+- Outras: registros de acesso, cookies sem consentimento, acessibilidade em JSX/HTML.
 - `.raioxignore`.
-- **Conferir**: repositório de exemplo com um segredo falso plantado e uma dependência antiga → os dois aparecem com `arquivo:linha`.
+- **Conferir**: repositório de exemplo com segredo falso plantado (no código e só no histórico), dependência antiga, consulta montada, tabela Supabase sem RLS e regra do Firebase aberta → tudo aparece com `arquivo:linha`; nenhum valor inteiro de chave aparece em `resultado.json`.
 
 ## Etapa 7 — Análise inteligente (IA)
 - Provedores Anthropic, compatível com OpenAI (OpenAI, Groq, OpenRouter, DeepSeek, Mistral, Together, Ollama, LM Studio) e Gemini.
@@ -56,9 +58,11 @@
 - CONTRIBUTING (como criar regra, provedor e tradução), modelos de problema/pedido no GitHub, tópicos do repositório, versão v0.1.0 nos lançamentos do GitHub.
 - **Conferir**: instalar num Windows limpo (ou máquina virtual), rodar uma análise com login e uma completa.
 
-## Etapa 10 — Teste real com o dono
-- Dono roda o Raio-X no Street Server (superfície + login + completo no repositório `street-server`) e compara com o speed.upteam.
-- Ajustes do que ele apontar.
+## Etapa 10 — Teste final no nosso sistema (pedido do dono em 26/11)
+- Rodar o Raio-X no Street Server: superfície sem login, superfície com login (páginas fechadas) e completo no repositório `street-server`, com e sem IA.
+- Comparar as 4 notas com o speed.upteam/PageSpeed; revisar com o dono a nota de Segurança e cada achado de segurança (falso positivo vira correção da regra; falha real vira tarefa de correção no Street Server, com troca de chave se for o caso).
+- O relatório desse teste **não vai para o repositório público** (tem dados do nosso sistema); fica só no PC.
+- Ajustes do que o dono apontar.
 
 ## Antes de cada envio público (todas as etapas)
 - Conferir que nada da lista "nunca abrir" (memória `repos-publicos-oss`) entrou: nada do street-base, street_store, bot, instalador, migração, skill street-roleplay, backups.

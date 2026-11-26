@@ -14,10 +14,10 @@
 1. Cola o endereço (ex.: `https://meusite.com.br`).
 2. Escolhe **Superfície**. Marca: celular, computador (os dois marcados por padrão) e "precisão" (3 rodadas, desmarcado).
 3. Clica **Analisar**.
-4. Andamento: "Abrindo o navegador → Medindo no celular → Medindo no computador → Conferindo as leis → Montando a lista".
+4. Andamento: "Abrindo o navegador → Medindo no celular → Medindo no computador → Conferindo a segurança → Conferindo as leis → Montando a lista".
 5. Abre o **Resultado**:
    - alternador Celular / Computador;
-   - 4 círculos de nota;
+   - 5 círculos de nota (Segurança com a etiqueta "parcial (sem o código)" neste modo);
    - 6 medidas;
    - 5 blocos legais com nota;
    - lista "O que ajustar".
@@ -48,16 +48,17 @@
    - "Sem IA (só regras fixas)";
    - "Minha IA" → escolhe provedor salvo (Claude, OpenAI, Gemini, Groq, OpenRouter, Ollama…) ou **Configurar IA** (provedor, endereço quando precisar, modelo, chave).
 5. Se escolheu IA: tela **"O que vai para a IA"** com a lista de arquivos e o tamanho total. Pode desmarcar arquivos. Botão **Concordo, enviar para a minha IA**.
-6. Roda: superfície (com ou sem login) → regras do código → IA (se escolhida).
+6. Roda: superfície (com ou sem login) → segurança do código e do banco → outras regras do código → IA (se escolhida).
 7. Resultado igual ao da superfície, mais:
-   - bloco **Código** (segredos, dependências, dados pessoais em registros...);
+   - nota de **Segurança** completa (sem a etiqueta "parcial"), com chaves no código e no histórico do git, banco de dados (consultas, senhas, Supabase/Firebase), dependências;
+   - bloco **Código** (registros de acesso, cookies sem consentimento, acessibilidade no código);
    - itens com **arquivo:linha** como lugar;
    - etiqueta "achado pela IA" nos itens que vieram da IA (a pessoa sabe o que conferir com mais atenção).
 
 ## 5. Histórico
 
 1. Tela **Histórico**: lista de sites; cada site mostra a última nota e a data.
-2. Abre um site: gráfico com a evolução das 4 notas e dos blocos legais, e a lista de análises.
+2. Abre um site: gráfico com a evolução das 5 notas e dos blocos legais, e a lista de análises.
 3. Abre uma análise antiga: o mesmo resultado de antes, com "comparado à anterior: +6 desempenho, −2 acessibilidade, 3 itens resolvidos, 1 novo".
 4. Pode apagar uma análise ou um site inteiro (pede confirmação).
 
@@ -93,3 +94,4 @@ A confirmação de autorização na linha de comando é a opção `--sou-dono`; 
 | Limite da IA grátis | "A IA avisou que passou do limite. Tente mais tarde ou troque de provedor." A análise termina sem a parte de IA. |
 | Pasta não é repositório | Aceita mesmo assim (só pula a busca de segredos no histórico do git). |
 | Parar no meio | Guarda o que já mediu como análise "incompleta". |
+| Chave secreta achada no site no ar | Aviso vermelho no topo do resultado: "Achamos uma chave secreta exposta. Troque a chave no serviço agora — só apagar do código não resolve." |

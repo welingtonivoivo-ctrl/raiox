@@ -5,7 +5,8 @@ Ferramenta de código aberto que examina o seu site **por fora e por dentro**:
 - notas de 0 a 100 em **Desempenho, Acessibilidade, Boas práticas e Busca (SEO)**, para celular e computador;
 - medidas de carregamento (primeira coisa na tela, maior elemento, tempo bloqueado, tela pulando, índice de velocidade);
 - testa também as **páginas atrás do login** — você entra no seu site numa janela e o Raio-X guarda só a sessão, criptografada, no seu computador;
-- **modo completo**: lê o repositório do projeto (segredos expostos, dependências com falha, dados pessoais em registros);
+- nota de **Segurança**: chaves de API expostas no site e no código (inclusive no histórico do git), arquivos que não deviam estar públicos (`.env`, `.git`, cópias do banco), banco de dados pelo código (consultas inseguras, senhas no código, Supabase e Firebase sem regras de acesso) — sem nunca entrar no banco nem tentar invadir nada;
+- **modo completo**: lê o repositório do projeto (segurança, dependências com falha, dados pessoais em registros);
 - conferência técnica das **leis brasileiras**: Cookies, LGPD, Acessibilidade (LBI), Defesa do Consumidor e Marco Civil;
 - lista **"O que ajustar"** ordenada por impacto, cada item com o lugar do problema e um **texto pronto para colar numa IA**;
 - análise inteligente com **a sua IA** (Claude, OpenAI, Gemini, Groq, OpenRouter, Ollama e outras, paga ou grátis) — o projeto não tem servidor e não cobra nada.

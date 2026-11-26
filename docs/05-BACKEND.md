@@ -47,6 +47,8 @@ type Resultado = {
   modo: 'superficie' | 'completo'
   completo: boolean                  // false se parou no meio
   paginas: ResultadoPagina[]
+  seguranca: { nota: number; parcial: boolean; alerta: boolean; falhas: number; atencoes: number; naoConferidos: number }
+  //  parcial = modo superfície (sem código); alerta = chave secreta ou arquivo exposto no site no ar (nota limitada a 20)
   blocosLegais: Record<BlocoLegal, { nota: number; falhas: number; atencoes: number; naoConferidos: number }>
   ajustes: Ajuste[]                  // já ordenados por impacto
   ia?: { provedor: string; modelo: string; arquivosEnviados: number; caracteres: number }
@@ -70,7 +72,7 @@ type BlocoLegal = 'cookies' | 'lgpd' | 'lbi' | 'cdc' | 'marcoCivil' | 'codigo'
 
 type Ajuste = {
   id: string                         // ex.: "lighthouse.uses-optimized-images" ou "cdc.identificacao"
-  bloco: 'desempenho' | 'acessibilidade' | 'boasPraticas' | 'busca' | BlocoLegal
+  bloco: 'desempenho' | 'acessibilidade' | 'boasPraticas' | 'busca' | 'seguranca' | BlocoLegal
   origem: 'lighthouse' | 'axe' | 'regra' | 'ia'
   titulo: string
   explicacao: string
@@ -86,7 +88,9 @@ type Lugar =
   | { tipo: 'pagina'; endereco: string; perfil?: 'celular' | 'computador'; seletor?: string; trecho?: string }
   | { tipo: 'arquivo'; caminho: string; linha?: number; trecho?: string }   // caminho relativo ao repo
 ```
-`trecho` passa por limpeza: valores que parecem segredo viram `••••`, e cortado em 300 caracteres.
+`trecho` passa por limpeza: valores que parecem segredo viram `••••`, e cortado em 300 caracteres. Nos achados de segurança, o valor da chave aparece só como os primeiros 8 caracteres + `…` e o serviço provável (`servicoProvavel: 'OpenAI'`); o valor inteiro nunca é gravado em `resultado.json`, relatório, histórico ou registros.
+
+`ctx` da segurança traz também: lista de scripts e `.map` baixados de cada página (só o texto, apagado ao fim da análise) e as respostas dos endereços da lista de arquivos expostos (código de resposta + primeiros 512 bytes).
 
 ## 4. Como uma regra é escrita
 
