@@ -13,10 +13,24 @@ Ferramenta de código aberto que examina o seu site **por fora e por dentro**:
 
 Três jeitos de usar: **app de computador** (Windows), **linha de comando** (`raiox`) e **skill do Claude Code**.
 
-> **Estado: em planejamento.** Ainda não há código. O que vai ser feito está em [`docs/`](docs/):
+> **Estado: em construção.** A Etapa 1 (medição das páginas públicas) já funciona pelo script de desenvolvimento abaixo. O que vai ser feito está em [`docs/`](docs/):
 > [PRD](docs/01-PRD.md) · [Técnico](docs/02-TRD.md) · [Fluxo](docs/03-FLUXO.md) · [Telas](docs/04-DESIGN.md) · [Núcleo](docs/05-BACKEND.md) · [Plano](docs/06-PLANO.md) · [Conferência](docs/CONFERENCIA.md)
 
 > A conferência das leis é técnica e automática. **Não substitui a análise de um advogado.**
+
+## Rodar em desenvolvimento
+
+Precisa de Node 22.19+ e pnpm 9.
+
+```
+pnpm install
+pnpm --filter @raiox/nucleo exec playwright-core install chromium
+pnpm medir https://example.com            # celular e computador
+pnpm medir https://example.com --precisao # 3 rodadas por perfil, usa a do meio
+pnpm tipos && pnpm teste
+```
+
+Se o Chromium baixado não abrir, o Raio-X usa o Edge ou o Chrome do seu PC.
 
 ## Usar com responsabilidade
 

@@ -1,0 +1,35 @@
+{
+  "notas": {
+    "desempenho": "Desempenho",
+    "acessibilidade": "Acessibilidade",
+    "boasPraticas": "Boas práticas",
+    "busca": "Busca (SEO)",
+    "seguranca": "Segurança"
+  },
+  "medidas": {
+    "primeiraCoisa": "Primeira coisa na tela",
+    "maiorElemento": "Maior elemento na tela",
+    "tempoBloqueado": "Tempo bloqueado",
+    "telaPulando": "Tela pulando",
+    "indiceVelocidade": "Índice de velocidade",
+    "prontoParaTocar": "Pronto para tocar"
+  },
+  "perfis": {
+    "celular": "Celular",
+    "computador": "Computador"
+  },
+  "faixas": {
+    "bom": "bom",
+    "medio": "médio",
+    "ruim": "ruim"
+  },
+  "erros": {
+    "enderecoInvalido": "Endereço inválido. Use um endereço que comece com http:// ou https://.",
+    "enderecoLocal": "Endereços do próprio computador (localhost) só com a opção \"permitir endereços locais\" ligada.",
+    "naoAbriu": "Não consegui abrir o site. Confira o endereço.",
+    "navegadorFaltando": "Não consegui abrir nenhum navegador de teste (Chromium do Raio-X, Edge ou Chrome). Baixe o do Raio-X com: pnpm exec playwright-core install chromium"
+  },
+  "avisos": {
+    "processadorLento": "Este computador está lento para o teste (força {forca}; o ideal é acima de 1000). A nota de desempenho no celular pode sair mais baixa que no PageSpeed do Google. Feche outros programas ou use a opção \"precisão\"."
+  }
+}

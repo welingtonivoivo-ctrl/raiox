@@ -1,0 +1,30 @@
+name: Conferir
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  conferir:
+    name: Tipos e testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Instalar pacotes
+        run: pnpm install --frozen-lockfile
+      - name: Baixar o navegador de teste
+        run: pnpm --filter @raiox/nucleo exec playwright-core install --with-deps chromium
+      - name: Conferir tipos
+        run: pnpm tipos
+      - name: Testes
+        run: pnpm teste

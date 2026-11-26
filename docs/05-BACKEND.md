@@ -42,6 +42,9 @@ type Resultado = {
   versaoFormato: 1
   versaoRaioX: string
   versaoLighthouse: string
+  navegador: string                  // canal e versão, ex.: "msedge 158.0.4370.33"
+  forcaProcessador: number | null    // força do processador medida pelo Lighthouse (menor rodada)
+  avisos: string[]                   // ex.: PC lento para o teste
   site: string
   quando: string                     // ISO 8601
   modo: 'superficie' | 'completo'

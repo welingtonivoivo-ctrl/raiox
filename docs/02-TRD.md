@@ -145,7 +145,8 @@ Nada é enviado para servidor do projeto (não existe servidor). Sem telemetria.
 
 ## 10. Requisitos e limites
 - Windows 10/11 64 bits para o app; Node 22 para a linha de comando.
-- O Chromium do Playwright é baixado na primeira execução (~150 MB) — o app avisa e mostra o progresso.
+- O Chromium do Playwright é baixado na primeira execução (~150 MB) — o app avisa e mostra o progresso. **Reserva (decidido na Etapa 1)**: se o Chromium baixado não abrir, o Raio-X usa o Edge ou o Chrome instalados no PC (todos Chromium); `RAIOX_NAVEGADOR` força um deles. O navegador usado fica gravado no resultado.
+- **PC lento**: o Lighthouse simula um celular lento a partir do processador do PC. Num PC fraco, o desempenho no celular sai mais baixo que no PageSpeed. O Raio-X grava a força do processador medida pelo Lighthouse e avisa quando ela fica abaixo de 1000 (Etapa 1: este PC mediu 293–551; o Street Server deu 83 no celular aqui contra 100 no PageSpeed, com as outras 3 notas iguais). Calibrar a simulação pela força do PC fica como melhoria futura.
 - Um teste de 1 página nos 2 perfis: ~30–60 s. 20 páginas: ~15–20 min (o app mostra o andamento e permite parar).
 - Instalador sem assinatura digital na v1 → o Windows mostra o aviso do SmartScreen ("Mais informações → Executar assim mesmo"). Assinatura fica para depois.
 
