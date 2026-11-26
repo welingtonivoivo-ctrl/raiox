@@ -237,5 +237,35 @@
     "Rendering": "Desenho na tela",
     "Garbage Collection": "Limpeza de memória",
     "Unattributable": "Sem arquivo identificado"
+  },
+  "cli": {
+    "ajuda": "Raio-X — testa a velocidade, a acessibilidade, as boas práticas e a busca (SEO) de um site e diz o que ajustar.\n\nUso:\n  raiox analisar <endereço> [mais endereços…] [opções]\n  raiox versao\n  raiox ajuda\n\nOpções de analisar:\n  --perfil celular|computador|ambos   aparelhos simulados (padrão: ambos)\n  --precisao                          3 rodadas por aparelho, usa a do meio (mais lento, nota mais estável)\n  --local                             permite endereços do próprio computador (localhost, 192.168…)\n  --saida <arquivo.html>              grava uma cópia do relatório neste arquivo\n  --json [arquivo]                    grava o resultado em JSON; sem arquivo, escreve na tela (para scripts e para a skill)\n  --textos <arquivo.md>               grava uma cópia dos textos para a IA\n  --minimo-desempenho <0–100>         termina com código 2 se alguma nota de desempenho ficar abaixo\n  --bruto                             guarda também o relatório original do Lighthouse\n  --sem-cor                           resumo sem cores\n\nToda análise fica guardada em {pasta}.\nCódigos de saída: 0 deu certo · 1 erro · 2 desempenho abaixo do mínimo pedido.\nLogin (raiox entrar, --com-login) e modo completo (--completo, --repo, --ia) chegam nas próximas versões.",
+    "andamento": "… {mensagem}",
+    "titulo": "Raio-X · {site} · {quando}",
+    "colunas": {
+      "celular": "Celular",
+      "computador": "Computador"
+    },
+    "asterisco": "* medido num computador lento — compare com o PageSpeed do Google",
+    "oQueAjustar": "O que ajustar ({n} itens):",
+    "nadaAjustar": "O que ajustar: nada nas notas medidas.",
+    "maisItens": "  … e mais {n} itens no relatório.",
+    "arquivos": {
+      "relatorio": "Relatório:",
+      "textos": "Textos para a IA:",
+      "dados": "Dados:"
+    },
+    "abaixoDoMinimo": "Desempenho abaixo do mínimo pedido ({minimo}): {lista}.",
+    "erros": {
+      "comandoDesconhecido": "Comando \"{comando}\" não existe. Use: raiox ajuda",
+      "semEndereco": "Falta o endereço. Exemplo: raiox analisar https://meusite.com.br",
+      "opcaoDesconhecida": "Opção não reconhecida: {opcao}. Use: raiox ajuda",
+      "perfilInvalido": "Perfil \"{valor}\" não existe. Use celular, computador ou ambos.",
+      "minimoInvalido": "--minimo-desempenho precisa de um número de 0 a 100.",
+      "faltaValor": "A opção {opcao} precisa de um valor.",
+      "pdfAindaNao": "Relatório em PDF chega com o app (Etapa 8). Por enquanto use --saida relatorio.html e imprima em PDF pelo navegador.",
+      "emBreve": "{opcao} ainda não está disponível nesta versão (chega na Etapa {etapa} do plano).",
+      "falhou": "Não consegui terminar a análise: {erro}"
+    }
   }
 }

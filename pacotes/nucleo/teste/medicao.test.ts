@@ -46,5 +46,5 @@ describe('medição com Lighthouse', () => {
       expect(res.medidas.primeiraCoisa.unidade).toBe('s')
       expect(res.medidas.prontoParaTocar).toBeDefined()
     }
-  }, 180_000)
+  })
 })

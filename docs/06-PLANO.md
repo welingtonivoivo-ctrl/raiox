@@ -23,6 +23,7 @@
 - Comando `raiox analisar` (superfície) com resumo em português e as saídas.
 - `skill/raiox/SKILL.md` + instruções de instalação.
 - **Conferir**: a skill instalada responde "faz um raio-x do server.playdravix.com" com o resultado certo.
+- **Feito em 26/11**: pacote `pacotes/cli` (comando `raiox`, roda o TypeScript pelo tsx; versão compilada fica para a Etapa 9), `scripts/instalar.mjs` (comando na pasta global do npm e skill ligada em `~/.claude/skills/raiox`), skill em `skill/raiox`. O núcleo passou a carregar Lighthouse e Playwright só na hora de medir: `raiox versao` caiu de ~40 s para ~1 s num PC fraco. Testes rodam um arquivo por vez (no PC fraco, em paralelo derrubavam a nota de desempenho e estouravam o prazo). Conferência: a skill apareceu no Claude Code e o raio-x do Street Server rodou de outra pasta com o JSON e o resumo certos. O `*` de PC lento ficou só nos ganhos em pontos (economia em bytes não depende do PC).
 
 ## Etapa 4 — Login e páginas fechadas
 - `raiox entrar`, sessão criptografada, cofre do Windows, sessão vencida, descoberta de páginas com a lista de palavras perigosas e limite de velocidade.

@@ -22,10 +22,10 @@ export { notaDaMedida } from './ajustes/nota.js'
 export { gerarRelatorio, salvarRelatorios, relatorioHtml, textosMarkdown, type FormatoRelatorio } from './relatorio/index.js'
 
 const exigir = createRequire(import.meta.url)
-const VERSAO_RAIOX: string = exigir('../package.json').version
-const VERSAO_LIGHTHOUSE: string = exigir('lighthouse/package.json').version
+export const VERSAO_RAIOX: string = exigir('../package.json').version
+export const VERSAO_LIGHTHOUSE: string = exigir('lighthouse/package.json').version
 
-export { FORCA_MINIMA } from './limites.js'
+export { FORCA_MINIMA, inflado, pcLento } from './limites.js'
 
 const PADRAO: OpcoesMedicao = { perfis: ['celular', 'computador'], precisao: false, permitirLocal: false }
 

@@ -8,6 +8,28 @@ importers:
 
   .: {}
 
+  pacotes/cli:
+    dependencies:
+      '@raiox/nucleo':
+        specifier: workspace:*
+        version: link:../nucleo
+      '@raiox/textos':
+        specifier: workspace:*
+        version: link:../textos
+      tsx:
+        specifier: 4.23.15
+        version: 4.23.15
+    devDependencies:
+      '@types/node':
+        specifier: '22'
+        version: 22.20.7
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: 5.1.2
+        version: 5.1.2(@opentelemetry/api@1.10.0)(@types/node@22.20.7)(vite@8.4.0(@types/node@22.20.7)(esbuild@0.28.2)(tsx@4.23.15))
+
   pacotes/nucleo:
     dependencies:
       '@raiox/textos':

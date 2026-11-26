@@ -195,8 +195,11 @@ O núcleo confere tudo que chega (tipos, endereço, pasta existe) mesmo vindo da
 
 ## 9. Linha de comando — saída e códigos
 
-- Sem `--json`: resumo colorido em português (notas, blocos, 10 primeiros ajustes).
-- `--json <arquivo>`: `Resultado` completo. `--saida`: HTML ou PDF pela extensão. `--textos`: arquivo Markdown de textos para IA.
+- Sem `--json`: resumo colorido em português (notas, blocos, 10 primeiros ajustes); sem cor com `--sem-cor`, `NO_COLOR` ou fora do terminal.
+- `--json <arquivo>`: `Resultado` completo. **`--json` sem arquivo** (decidido na Etapa 3): o `Resultado` sai na tela e o resumo, o andamento e os caminhos vão para a saída de erros — é o que a skill usa. `--saida`: HTML (PDF chega com o app, Etapa 8). `--textos`: arquivo Markdown de textos para IA.
+- Toda análise também fica guardada em `%APPDATA%\Raio-X\analises\<site>\<AAAAMMDD-HHMMSS>\` (`RAIOX_DADOS` troca a pasta). `--bruto` guarda junto o relatório original do Lighthouse.
+- Outras opções: `--perfil celular|computador|ambos`, `--precisao`, `--local` (endereços do próprio PC). Endereço sem protocolo ganha `https://` (`http://` para localhost e números).
+- Opções e comandos das próximas etapas (`entrar`, `sessoes`, `--com-login`, `--paginas`, `--completo`, `--repo`, `--ia`) respondem "chega na Etapa N"; `--sem-ia` e `--sou-dono` são aceitas sem efeito.
 - Códigos de saída: 0 ok; 1 erro; 2 análise feita mas abaixo do limite pedido por `--minimo-desempenho 90` (pronto para uso futuro em testes automáticos).
 
 ## 10. Skill do Claude (`skill/raiox/SKILL.md`)

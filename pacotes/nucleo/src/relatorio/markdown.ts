@@ -1,7 +1,7 @@
 // Arquivo de textos para a IA (docs/04-DESIGN.md §6).
 import textos from '@raiox/textos/pt-BR.json' with { type: 'json' }
 import { descreverLugar, preencher } from '../ajustes/texto-ia.js'
-import { FORCA_MINIMA } from '../limites.js'
+import { inflado } from '../limites.js'
 import type { ResultadoMedicao } from '../tipos.js'
 
 export function dataCurta(iso: string): string {
@@ -23,7 +23,7 @@ export function textosMarkdown(r: ResultadoMedicao): string {
   for (const a of r.avisos) linhas.push(`> ⚠ ${a}`, '')
   if (!r.ajustes.length) linhas.push(t.nadaAjustar, '')
   r.ajustes.forEach((a, i) => {
-    const lento = r.forcaProcessador !== null && r.forcaProcessador < FORCA_MINIMA && a.bloco === 'desempenho'
+    const lento = inflado(a, r.forcaProcessador)
     const ganho = `${a.ganho ?? textos.ajustes.gravidades[a.gravidade]}${lento ? '*' : ''}`
     linhas.push(preencher(t.mdItem, { n: i + 1, bloco: textos.blocos[a.bloco], ganho, titulo: a.titulo }))
     if (a.lugares.length) {
@@ -39,7 +39,7 @@ export function textosMarkdown(r: ResultadoMedicao): string {
     for (const l of a.textoIA.split('\n')) linhas.push(`> ${l}`)
     linhas.push('')
   })
-  if (r.forcaProcessador !== null && r.forcaProcessador < FORCA_MINIMA && r.ajustes.some((a) => a.bloco === 'desempenho')) {
+  if (r.ajustes.some((a) => inflado(a, r.forcaProcessador))) {
     linhas.push(`\\* ${t.forcaBaixa}`, '')
   }
   return linhas.join('\n')

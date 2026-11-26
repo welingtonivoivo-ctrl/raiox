@@ -1,11 +1,15 @@
-import lighthouse, { desktopConfig, type Result as RelatorioLighthouse } from 'lighthouse'
-import { computeMedianRun } from 'lighthouse/core/lib/median-run.js'
+import type { Result as RelatorioLighthouse } from 'lighthouse'
 import type { Perfil } from '../tipos.js'
 
 const CATEGORIAS = ['performance', 'accessibility', 'best-practices', 'seo']
 
+// O Lighthouse é pesado para carregar (dezenas de segundos num PC fraco): só entra quando vai medir,
+// para `raiox versao`, `raiox ajuda` e o relatório abrirem na hora.
+const carregar = () => import('lighthouse')
+
 /** Uma rodada do Lighthouse num navegador já aberto (porta de depuração). */
 export async function rodarLighthouse(endereco: string, porta: number, perfil: Perfil): Promise<RelatorioLighthouse> {
+  const { default: lighthouse, desktopConfig } = await carregar()
   const config = perfil === 'computador' ? desktopConfig : undefined // sem config = perfil celular padrão
   const r = await lighthouse(
     endereco,
@@ -29,5 +33,6 @@ export async function medirPerfil(endereco: string, porta: number, perfil: Perfi
   if (!precisao) return rodarLighthouse(endereco, porta, perfil)
   const rodadas: RelatorioLighthouse[] = []
   for (let i = 0; i < 3; i++) rodadas.push(await rodarLighthouse(endereco, porta, perfil))
+  const { computeMedianRun } = await import('lighthouse/core/lib/median-run.js')
   return computeMedianRun(rodadas)
 }
