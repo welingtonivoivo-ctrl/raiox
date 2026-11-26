@@ -67,7 +67,8 @@ Trilho à esquerda com ícones + nome: **Nova análise**, **Histórico**, **Minh
 ### 4.4 Resultado
 - Topo: alternador **Celular | Computador**, data da análise, botões Copiar todos os textos / Baixar relatório / Analisar de novo.
 - Coluna de páginas à esquerda (só quando há mais de uma), cada linha com a nota de desempenho em bolinha colorida.
-- Faixa de **4 círculos de nota** (anel colorido, número grande no meio, nome embaixo).
+- Aviso vermelho fixo no topo quando houver chave secreta ou arquivo exposto no site no ar (com botão "ver onde").
+- Faixa de **5 círculos de nota** (anel colorido, número grande no meio, nome embaixo): Desempenho, Acessibilidade, Boas práticas, Busca e **Segurança**. Segurança não muda com o alternador Celular/Computador e mostra "parcial (sem o código)" no modo superfície.
 - Grade de **6 medidas** (nome, valor, faixa colorida bom/médio/ruim).
 - Faixa de **5 blocos legais** (Cookies, LGPD, Acessibilidade, Consumidor, Marco Civil) + **Código** no modo completo, cada um com nota e contagem "3 falhas · 2 atenções".
 - **O que ajustar**: lista de cartões, do maior impacto ao menor. Cada cartão: etiqueta do bloco, título simples, "ganha ~+8 de desempenho" ou "risco alto", número de páginas afetadas. Ao abrir: explicação, **lugar** (página + elemento, ou `arquivo:linha` clicável que abre a pasta), base legal quando houver, caixa com o **texto para IA** e botão **Copiar**. Etiqueta "achado pela IA" quando for o caso.
@@ -80,7 +81,7 @@ Trilho à esquerda com ícones + nome: **Nova análise**, **Histórico**, **Minh
 - Botões **Concordo, enviar para a minha IA** e **Voltar**.
 
 ### 4.6 Histórico
-- Grade de sites (cartão com nome, última data, 4 notas pequenas).
+- Grade de sites (cartão com nome, última data, 5 notas pequenas).
 - Página do site: gráfico de linhas com a evolução das notas (uma cor por nota, legenda em texto), lista de análises com "+6 / −2" em relação à anterior.
 
 ### 4.7 Minhas IAs
@@ -96,7 +97,8 @@ Trilho à esquerda com ícones + nome: **Nova análise**, **Histórico**, **Minh
 
 ## 5. Relatório exportado (HTML / PDF)
 - Mesmo conteúdo da tela Resultado, em página única, com tema claro (para imprimir) e cores das notas.
-- Página 1: site, data, modo, as 4 notas nos dois perfis, blocos legais.
+- Página 1: site, data, modo, as 4 notas nos dois perfis, a nota de Segurança, blocos legais.
+- Chaves achadas aparecem só com o começo do valor (ex.: `sk-proj-4f…`), nunca inteiras.
 - Depois: medidas, "O que ajustar" com todos os detalhes abertos, aviso legal no fim.
 - Sem cookies, sem chaves, sem conteúdo das páginas testadas.
 
