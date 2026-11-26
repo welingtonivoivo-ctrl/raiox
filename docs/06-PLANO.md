@@ -1,0 +1,77 @@
+# 06 — PLANO: etapas de implementação
+
+> Estado: **rascunho para aprovação do dono** — 26/11/2026.
+> Cada etapa termina com conferência própria. "Compilou" não é teste: cada etapa separa **validação de arquivo** (testes automáticos) de **validação de uso** (rodar de verdade contra um site).
+
+## Etapa 0 — Repositório e documentos (esta)
+- Repositório público `raiox` no GitHub do dono, com LICENSE (GPL-3.0), README e os 6 documentos.
+- **Feito quando**: dono aprova os documentos; repositório criado com eles (primeiro envio aprovado pelo dono).
+
+## Etapa 1 — Esqueleto e medição pública
+- pnpm com espaços de trabalho, TypeScript, Vitest, conferência automática no GitHub (testes a cada envio).
+- `nucleo/medir`: Playwright abre o Chromium com porta de depuração; Lighthouse mede celular e computador; 4 notas + 6 medidas no formato `Resultado`.
+- Fixar versões de Lighthouse e Playwright; conferir se a medida "Pronto para tocar" existe.
+- **Conferir**: teste automático com página de exemplo local; rodar contra server.playdravix.com e comparar com o PageSpeed (até 5 pontos de diferença).
+
+## Etapa 2 — "O que ajustar" e relatório
+- Conversão das oportunidades/auditorias do Lighthouse em `Ajuste`, com lugar e ganho; fórmula de impacto; textos para IA.
+- Relatório HTML, arquivo Markdown de textos e JSON.
+- **Conferir**: colar 3 textos gerados no Claude e ver se a correção sugerida faz sentido para o problema.
+
+## Etapa 3 — Linha de comando e skill
+- Comando `raiox analisar` (superfície) com resumo em português e as saídas.
+- `skill/raiox/SKILL.md` + instruções de instalação.
+- **Conferir**: a skill instalada responde "faz um raio-x do server.playdravix.com" com o resultado certo.
+
+## Etapa 4 — Login e páginas fechadas
+- `raiox entrar`, sessão criptografada, cofre do Windows, sessão vencida, descoberta de páginas com a lista de palavras perigosas e limite de velocidade.
+- Decidir o compartilhamento de sessão entre app e linha de comando (05-BACKEND §8).
+- **Conferir**: entrar no Street Server com a conta de teste; descobrir e medir ≥ 10 páginas fechadas; conferir no registro que nenhum endereço perigoso foi aberto; conferir que o arquivo da sessão não é legível sem o cofre.
+
+## Etapa 5 — Conferências legais da superfície
+- Regras de Cookies, LGPD, Acessibilidade (axe-core + Lighthouse, agrupado por WCAG 2.2/eMAG), Defesa do Consumidor, Marco Civil + cabeçalhos.
+- Lista aberta de domínios de rastreio; notas dos blocos; aviso legal.
+- Páginas de exemplo que falham e que cumprem cada regra.
+- **Conferir**: todos os testes de regra passam; rodar contra o Street Server e uma loja de exemplo e revisar cada achado com o dono (falso positivo vira correção da regra).
+
+## Etapa 6 — Modo completo: regras do código
+- Segredos (código + histórico do git), dependências com falha conhecida, dados pessoais em registros, registros de acesso, cookies sem consentimento, acessibilidade em JSX/HTML.
+- `.raioxignore`.
+- **Conferir**: repositório de exemplo com um segredo falso plantado e uma dependência antiga → os dois aparecem com `arquivo:linha`.
+
+## Etapa 7 — Análise inteligente (IA)
+- Provedores Anthropic, compatível com OpenAI (OpenAI, Groq, OpenRouter, DeepSeek, Mistral, Together, Ollama, LM Studio) e Gemini.
+- Tela/lista "O que vai para a IA", limpeza de segredos, divisão por bloco, validação dos achados.
+- Skill: modo completo com o próprio Claude.
+- **Conferir**: rodar com pelo menos uma IA paga e uma grátis/local (ex.: Groq ou Ollama); achados inventados (arquivo inexistente) são descartados; nenhuma chave aparece em `resultado.json`, relatório ou registros (busca no texto).
+
+## Etapa 8 — App de computador
+- Electron + React + Vite, visual Azul Neon, todas as telas do 04-DESIGN, núcleo em processo separado, mensagens do 05-BACKEND §7.
+- Histórico com gráfico e comparação; exportar HTML/PDF.
+- **Conferir**: fluxos 2, 3, 4 e 5 do 03-FLUXO de ponta a ponta; o próprio app passa no axe-core sem falha alta; nenhuma barra de rolagem visível (conferido pelo estilo calculado de cada área rolável, sem captura de tela).
+
+## Etapa 9 — Instalador e lançamento v0.1
+- electron-builder NSIS para Windows; Chromium baixado na primeira execução.
+- Conferir se o nome `raiox` está livre no npm para a linha de comando; se não, usar outro nome de pacote (o comando continua `raiox`).
+- CONTRIBUTING (como criar regra, provedor e tradução), modelos de problema/pedido no GitHub, tópicos do repositório, versão v0.1.0 nos lançamentos do GitHub.
+- **Conferir**: instalar num Windows limpo (ou máquina virtual), rodar uma análise com login e uma completa.
+
+## Etapa 10 — Teste real com o dono
+- Dono roda o Raio-X no Street Server (superfície + login + completo no repositório `street-server`) e compara com o speed.upteam.
+- Ajustes do que ele apontar.
+
+## Antes de cada envio público (todas as etapas)
+- Conferir que nada da lista "nunca abrir" (memória `repos-publicos-oss`) entrou: nada do street-base, street_store, bot, instalador, migração, skill street-roleplay, backups.
+- Nenhum segredo, IP de servidor, ID de jogador, e-mail pessoal ou relatório de análise real com dados do Street nos arquivos nem no histórico (busca com grep e, quando disponível, gitleaks).
+- Exemplos usam `example.com` / sites de exemplo locais.
+- Mensagens de envio em português.
+
+## Riscos
+| Risco | Como lidar |
+|---|---|
+| Notas variam a cada rodada | Opção "precisão" (mediana de 3) e aviso na tela |
+| Regra legal com falso positivo | Estado "atenção" em vez de "falha" quando a conferência é por texto; aviso legal sempre visível |
+| Site com proteção contra robôs | Mensagem clara; o dono do site pode liberar |
+| IA inventa achados | Validação de arquivo/linha e etiqueta "achado pela IA" |
+| Instalador sem assinatura | README explica o aviso do SmartScreen; assinatura fica para depois |
+| Mudanças no Lighthouse | Versão fixada; atualização é tarefa própria com comparação de notas |
