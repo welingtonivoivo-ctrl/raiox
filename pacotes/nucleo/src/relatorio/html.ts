@@ -3,7 +3,7 @@
 import textos from '@raiox/textos/pt-BR.json' with { type: 'json' }
 import { descreverLugar, preencher } from '../ajustes/texto-ia.js'
 import type { Ajuste, Medida, Medidas, Notas, Perfil, ResultadoMedicao, ResultadoPerfil } from '../tipos.js'
-import { FORCA_MINIMA } from '../limites.js'
+import { FORCA_MINIMA, inflado } from '../limites.js'
 import { nomeDoSite, textosMarkdown } from './markdown.js'
 
 
@@ -62,7 +62,7 @@ function blocoPerfil(perfil: Perfil, res: ResultadoPerfil, pcLento: boolean): st
   return `<section class="perfil"><h3>${escapar(textos.perfis[perfil])}</h3><div class="notas">${notas}</div><ul class="medidas">${medidas}</ul>${rodape}</section>`
 }
 
-function cartao(a: Ajuste, n: number, pcLento: boolean): string {
+function cartao(a: Ajuste, n: number, forca: number | null): string {
   const t = textos.relatorio
   const paginas =
     a.paginasAfetadas === 1
@@ -78,7 +78,7 @@ function cartao(a: Ajuste, n: number, pcLento: boolean): string {
     <span class="etiqueta">${escapar(textos.blocos[a.bloco])}</span>
     <span class="grav">${escapar(textos.ajustes.gravidades[a.gravidade])}</span>
     <span class="estado ${a.estado}">${escapar(textos.ajustes.estados[a.estado])}</span>
-    ${a.ganho ? `<span class="ganho">${escapar(a.ganho)}${pcLento && a.bloco === 'desempenho' ? '<sup>*</sup>' : ''}</span>` : ''}
+    ${a.ganho ? `<span class="ganho">${escapar(a.ganho)}${inflado(a, forca) ? '<sup>*</sup>' : ''}</span>` : ''}
     <span class="pags">${escapar(paginas)}</span>
   </header>
   <h3>${escapar(a.titulo)}</h3>
@@ -186,9 +186,9 @@ export function relatorioHtml(r: ResultadoMedicao): string {
     })
     .join('')
   const lista = r.ajustes.length
-    ? r.ajustes.map((a, i) => cartao(a, i + 1, pcLento)).join('')
+    ? r.ajustes.map((a, i) => cartao(a, i + 1, r.forcaProcessador)).join('')
     : `<p>${escapar(t.nadaAjustar)}</p>`
-  const obsLento = pcLento && r.ajustes.some((a) => a.bloco === 'desempenho') ? `<p class="obs"><sup>*</sup> ${escapar(t.forcaBaixa)}</p>` : ''
+  const obsLento = r.ajustes.some((a) => inflado(a, r.forcaProcessador)) ? `<p class="obs"><sup>*</sup> ${escapar(t.forcaBaixa)}</p>` : ''
   const copiarTodos = r.ajustes.length ? `<button type="button" data-copiar="todos">${escapar(t.copiarTodos)}</button>` : ''
   const forca = r.forcaProcessador === null ? '' : ` · ${escapar(preencher(t.forca, { forca: r.forcaProcessador }))}`
 

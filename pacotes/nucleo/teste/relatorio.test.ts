@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
-import { relatorioHtml, salvarRelatorios, textosMarkdown, type Ajuste, type ResultadoMedicao } from '../src/index.js'
+import { inflado, relatorioHtml, salvarRelatorios, textosMarkdown, type Ajuste, type ResultadoMedicao } from '../src/index.js'
 import { abrirNavegador } from '../src/medir/navegador.js'
 
 const medida = { valor: 1.2, unidade: 's' as const, faixa: 'bom' as const }
@@ -116,5 +116,15 @@ describe('salvarRelatorios', () => {
     expect(JSON.parse(readFileSync(c.json, 'utf8'))).toEqual(resultado)
     expect(readFileSync(c.html, 'utf8')).toMatch(/^<!doctype html>/)
     expect(readFileSync(c.textos, 'utf8')).toBe(textosMarkdown(resultado))
+  })
+})
+
+describe('asterisco de PC lento', () => {
+  it('só em ganho de pontos de desempenho, não em economia de bytes', () => {
+    expect(inflado({ bloco: 'desempenho', impacto: 30 }, 400)).toBe(true)
+    expect(inflado({ bloco: 'desempenho', impacto: 0 }, 400)).toBe(false)
+    expect(inflado({ bloco: 'acessibilidade', impacto: 25 }, 400)).toBe(false)
+    expect(inflado({ bloco: 'desempenho', impacto: 30 }, 1500)).toBe(false)
+    expect(inflado({ bloco: 'desempenho', impacto: 30 }, null)).toBe(false)
   })
 })

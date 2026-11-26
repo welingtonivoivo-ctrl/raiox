@@ -18,25 +18,44 @@ Três jeitos de usar: **app de computador** (Windows), **linha de comando** (`ra
 
 > A conferência das leis é técnica e automática. **Não substitui a análise de um advogado.**
 
-## Rodar em desenvolvimento
+## Instalar (a partir do repositório)
 
 Precisa de Node 22.19+ e pnpm 9.
 
 ```
 pnpm install
 pnpm --filter @raiox/nucleo exec playwright-core install chromium
-pnpm medir https://example.com            # celular e computador
-pnpm medir https://example.com --precisao # 3 rodadas por perfil, usa a do meio
-pnpm medir https://example.com --saida minha-pasta --bruto  # escolhe a pasta e guarda o relatório original do Lighthouse
-pnpm tipos && pnpm teste
+pnpm instalar-comando   # cria o comando `raiox` (na pasta global do npm, que já está no PATH)
+pnpm instalar-skill     # liga a skill do Claude Code em ~/.claude/skills/raiox
+```
+`pnpm desinstalar` remove os dois (só o que esses comandos criaram). Sem instalar, use `pnpm raiox …` dentro da pasta do repositório.
+
+## Usar
+
+```
+raiox analisar meusite.com.br                          # celular e computador
+raiox analisar meusite.com.br/loja meusite.com.br/contato --perfil celular
+raiox analisar meusite.com.br --precisao               # 3 rodadas por aparelho, usa a do meio
+raiox analisar meusite.com.br --saida relatorio.html --textos textos-ia.md --json resultado.json
+raiox analisar meusite.com.br --minimo-desempenho 90   # código 2 se ficar abaixo (para testes automáticos)
+raiox analisar localhost:3000 --local                  # o seu projeto rodando no PC
+raiox ajuda
 ```
 
-Cada medição grava, em `raiox-saida/<site>-<data>/` (ou na pasta de `--saida`):
+Toda análise fica guardada em `%APPDATA%\Raio-X\analises\<site>\<data>\`:
 - `relatorio.html`: notas, medidas e a lista **O que ajustar**, do maior impacto ao menor, com botões para copiar os textos;
 - `textos-ia.md`: um texto pronto para colar numa IA para cada item;
 - `resultado.json`: tudo em formato de dados.
 
-Se o Chromium baixado não abrir, o Raio-X usa o Edge ou o Chrome do seu PC. Em computador lento, a nota de desempenho no celular sai mais baixa que no PageSpeed do Google; o relatório avisa e marca essas notas com `*`.
+**Com o Claude Code**: depois de `pnpm instalar-skill`, peça "faz um raio-x do meusite.com.br". O Claude roda o Raio-X, explica as notas e oferece corrigir os itens no seu código, perguntando antes.
+
+Se o Chromium baixado não abrir, o Raio-X usa o Edge ou o Chrome do seu PC. Em computador lento, a nota de desempenho no celular sai mais baixa que no PageSpeed do Google; o Raio-X avisa e marca essas notas com `*`.
+
+## Desenvolver
+
+```
+pnpm tipos && pnpm teste
+```
 
 ## Usar com responsabilidade
 

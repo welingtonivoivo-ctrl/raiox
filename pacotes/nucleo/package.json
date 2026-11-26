@@ -10,8 +10,7 @@
   },
   "scripts": {
     "tipos": "tsc --noEmit -p .",
-    "teste": "vitest run",
-    "medir": "tsx scripts/medir.ts"
+    "teste": "vitest run"
   },
   "dependencies": {
     "@raiox/textos": "workspace:*",

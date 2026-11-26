@@ -1,5 +1,5 @@
 import { createServer } from 'node:net'
-import { chromium, type Browser } from 'playwright-core'
+import type { Browser } from 'playwright-core'
 import { ErroRaioX } from './endereco.js'
 
 export type NavegadorDeTeste = { navegador: Browser; porta: number; canal: string; fechar: () => Promise<void> }
@@ -33,6 +33,8 @@ async function portaLivre(): Promise<number> {
 export async function abrirNavegador(): Promise<NavegadorDeTeste> {
   const forcado = process.env.RAIOX_NAVEGADOR
   const canais = forcado ? [forcado] : [...CANAIS]
+  // carregado só aqui, para não pesar quem só gera relatório ou lê a ajuda
+  const { chromium } = await import('playwright-core')
   const falhas: string[] = []
   for (const canal of canais) {
     const porta = await portaLivre()
