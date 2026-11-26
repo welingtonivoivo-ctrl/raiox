@@ -31,5 +31,211 @@
   },
   "avisos": {
     "processadorLento": "Este computador está lento para o teste (força {forca}; o ideal é acima de 1000). A nota de desempenho no celular pode sair mais baixa que no PageSpeed do Google. Feche outros programas ou use a opção \"precisão\"."
+  },
+  "blocos": {
+    "desempenho": "Desempenho",
+    "acessibilidade": "Acessibilidade",
+    "boasPraticas": "Boas práticas",
+    "busca": "Busca (SEO)",
+    "seguranca": "Segurança",
+    "cookies": "Cookies",
+    "lgpd": "LGPD",
+    "lbi": "Acessibilidade (LBI)",
+    "cdc": "Defesa do Consumidor",
+    "marcoCivil": "Marco Civil",
+    "codigo": "Código"
+  },
+  "notasMinusculas": {
+    "desempenho": "desempenho",
+    "acessibilidade": "acessibilidade",
+    "boasPraticas": "boas práticas",
+    "busca": "busca"
+  },
+  "ajustes": {
+    "gravidades": {
+      "alta": "alta",
+      "media": "média",
+      "baixa": "baixa"
+    },
+    "estados": {
+      "falha": "falha",
+      "atencao": "atenção",
+      "naoConferido": "não deu para conferir"
+    },
+    "ganhoPontos": "ganha ~+{pontos} de {nota}",
+    "ganhoPequeno": "ganho pequeno em {nota}",
+    "noPerfil": "no {perfil}",
+    "economia": "economiza {valor}",
+    "paginasAfetadas": {
+      "um": "1 página",
+      "varios": "{n} páginas"
+    },
+    "lugarPagina": "página {endereco}",
+    "lugarPerfil": "({perfil})",
+    "lugarElemento": "elemento {seletor}",
+    "lugarRecurso": "arquivo do site {recurso}",
+    "lugarTrecho": "trecho: {trecho}",
+    "lugarArquivo": "arquivo {caminho}",
+    "lugarLinha": "linha {linha}",
+    "outrosLugares": "…e mais {n} lugares parecidos.",
+    "lugarMotivo": "motivo: {motivo}"
+  },
+  "textoIA": {
+    "abertura": "No meu site {site}, a ferramenta Raio-X encontrou: {titulo}.",
+    "onde": "Onde:",
+    "mediu": "O que o teste mediu:",
+    "porque": "Por que importa: {explicacao}",
+    "baseLegal": " — base legal: {baseLegal}",
+    "saibaMais": "Mais detalhes: {endereco}",
+    "pedido": "O que eu preciso: corrija esse problema no meu projeto sem mudar o comportamento do resto.\nExplique o que mudou e como conferir que deu certo.",
+    "dica": "Dica: {dica}"
+  },
+  "lighthouse": {
+    "unused-javascript": {
+      "dica": "Veja quais bibliotecas ou componentes desse arquivo não são usados na primeira tela e carregue-os só quando precisar (importação dinâmica / divisão do código). Se o nome do arquivo for embaralhado (ex.: _next/static/chunks/…), descubra o que tem dentro com o analisador do empacotador (@next/bundle-analyzer, rollup-plugin-visualizer ou source-map-explorer)."
+    },
+    "unused-css-rules": {
+      "dica": "Remova o CSS que não é usado nesta página ou divida por página (CSS Modules, CSS por rota); ferramentas como o PurgeCSS ou o próprio framework ajudam. Confira também CSS global importado em todas as páginas."
+    },
+    "legacy-javascript-insight": {
+      "dica": "Ajuste o alvo de navegadores para navegadores atuais (campo browserslist no package.json, ou o target do compilador), para não incluir polyfills desnecessários. Se uma biblioteca já vem compilada para navegadores antigos, veja se ela tem uma versão moderna."
+    },
+    "render-blocking-insight": {
+      "dica": "Carregue esses arquivos sem travar a primeira pintura: CSS crítico embutido, o resto com preload; scripts com defer ou async."
+    },
+    "image-delivery-insight": {
+      "dica": "Use formatos modernos (WebP/AVIF), no tamanho em que a imagem aparece na tela, e carregamento preguiçoso (loading=\"lazy\") fora da primeira tela."
+    },
+    "lcp-discovery-insight": {
+      "dica": "A imagem do maior elemento deve estar no HTML inicial, sem loading=\"lazy\", e com fetchpriority=\"high\"."
+    },
+    "lcp-breakdown-insight": {
+      "dica": "Veja qual parte do tempo do maior elemento é maior (resposta do servidor, carregamento ou atraso de desenho) e ataque essa parte primeiro."
+    },
+    "document-latency-insight": {
+      "dica": "Reduza o tempo de resposta do servidor para a página: cache, menos consultas antes de responder, compressão e sem redirecionamentos."
+    },
+    "server-response-time": {
+      "dica": "Reduza o tempo de resposta do servidor para a página: cache, menos consultas antes de responder e um servidor mais perto do público."
+    },
+    "cls-culprits-insight": {
+      "dica": "Reserve o espaço de imagens, anúncios e blocos que carregam depois (width/height ou aspect-ratio) e evite inserir conteúdo acima do que já está na tela."
+    },
+    "unsized-images": {
+      "dica": "Coloque width e height (ou aspect-ratio no CSS) em cada imagem para a tela não pular quando ela carregar."
+    },
+    "font-display-insight": {
+      "dica": "Use font-display: swap (ou optional) nas fontes para o texto aparecer antes da fonte terminar de baixar."
+    },
+    "mainthread-work-breakdown": {
+      "dica": "Divida tarefas longas de JavaScript, adie o que não é da primeira tela e evite recalcular estilos e layout em sequência."
+    },
+    "bootup-time": {
+      "dica": "Diminua o JavaScript que roda ao abrir a página: carregue componentes pesados só quando forem usados e retire bibliotecas que não são necessárias."
+    },
+    "long-tasks": {
+      "dica": "Quebre tarefas longas em partes menores (por exemplo com setTimeout/scheduler.yield) para a página continuar respondendo."
+    },
+    "dom-size-insight": {
+      "dica": "Mostre menos elementos de uma vez: paginação, listas virtualizadas ou carregar seções sob demanda."
+    },
+    "third-parties-insight": {
+      "dica": "Avalie se cada serviço de terceiros é necessário na primeira tela; carregue-os depois da interação ou com atraso."
+    },
+    "cache-insight": {
+      "dica": "Configure cabeçalhos de cache longos (Cache-Control) para arquivos com nome versionado, como scripts, estilos, fontes e imagens."
+    },
+    "total-byte-weight": {
+      "dica": "Diminua o peso total: imagens menores, menos JavaScript e compressão (gzip/brotli) no servidor."
+    },
+    "duplicated-javascript-insight": {
+      "dica": "Uma mesma biblioteca está em mais de um arquivo; ajuste o empacotador para compartilhar a cópia."
+    },
+    "modern-http-insight": {
+      "dica": "Ative HTTP/2 ou HTTP/3 no servidor ou na CDN."
+    },
+    "viewport-insight": {
+      "dica": "Use <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> para o toque responder sem atraso no celular."
+    },
+    "image-alt": {
+      "dica": "Escreva um alt que descreva a imagem; se for só enfeite, use alt=\"\"."
+    },
+    "color-contrast": {
+      "dica": "Escureça o texto ou clareie o fundo até atingir contraste de pelo menos 4,5:1 (3:1 para texto grande)."
+    },
+    "button-name": {
+      "dica": "Dê um nome ao botão: texto visível ou aria-label quando for só um ícone."
+    },
+    "link-name": {
+      "dica": "Coloque um texto no link (ou aria-label quando for só ícone) dizendo para onde ele leva."
+    },
+    "label": {
+      "dica": "Ligue cada campo a um <label for=...> ou use aria-label."
+    },
+    "html-has-lang": {
+      "dica": "Coloque lang=\"pt-BR\" na tag <html>."
+    },
+    "document-title": {
+      "dica": "Coloque um <title> que diga do que trata a página."
+    },
+    "meta-description": {
+      "dica": "Coloque <meta name=\"description\"> com um resumo de uma ou duas frases da página."
+    },
+    "target-size": {
+      "dica": "Deixe botões e links tocáveis com pelo menos 24×24 px e espaço entre eles."
+    },
+    "heading-order": {
+      "dica": "Use os títulos em ordem (h1, depois h2, depois h3), sem pular níveis."
+    },
+    "errors-in-console": {
+      "dica": "Abra o console do navegador nesta página e corrija os erros listados."
+    },
+    "is-on-https": {
+      "dica": "Sirva todos os arquivos por https:// e redirecione http para https."
+    },
+    "crawlable-anchors": {
+      "dica": "Use links <a href=\"...\"> de verdade em vez de cliques só por JavaScript."
+    },
+    "bf-cache": {
+      "dica": "Evite o que impede o cache de voltar/avançar (por exemplo o evento unload e o cabeçalho Cache-Control: no-store na página)."
+    }
+  },
+  "relatorio": {
+    "titulo": "Raio-X — {site}",
+    "gerado": "Análise de {quando}",
+    "navegador": "Navegador {navegador} · Lighthouse {lighthouse} · Raio-X {raiox}",
+    "forca": "Força do processador: {forca}",
+    "forcaBaixa": "medido num computador lento — compare o desempenho no celular com o PageSpeed do Google",
+    "avisos": "Avisos",
+    "notas": "Notas",
+    "medidas": "Medidas",
+    "erroPagina": "Não consegui medir esta página: {erro}",
+    "oQueAjustar": "O que ajustar",
+    "nadaAjustar": "Nada a ajustar nas notas medidas. 🎉",
+    "lugar": "Onde",
+    "explicacao": "Por que importa",
+    "textoIA": "Texto para a IA",
+    "copiar": "Copiar",
+    "copiado": "Copiado",
+    "copiarTodos": "Copiar todos os textos",
+    "saibaMais": "Mais detalhes",
+    "ainda": "A nota de Segurança e as conferências das leis (Cookies, LGPD, Acessibilidade, Consumidor e Marco Civil) chegam nas próximas versões.",
+    "rodape": "Gerado pelo Raio-X (código aberto, GPL-3.0). Os dados ficam só no seu computador.",
+    "arquivoTextos": "Textos para a IA",
+    "mdTitulo": "# Raio-X — {site} — {data}",
+    "mdItem": "## {n}. [{bloco} · {ganho}] {titulo}",
+    "mdLugar": "Lugar:",
+    "mdTexto": "Texto para a IA:",
+    "mediu": "O que o teste mediu"
+  },
+  "termosLighthouse": {
+    "Other": "Outros",
+    "Script Evaluation": "Execução de scripts",
+    "Style & Layout": "Estilo e layout",
+    "Script Parsing & Compilation": "Leitura e compilação de scripts",
+    "Parse HTML & CSS": "Leitura do HTML e CSS",
+    "Rendering": "Desenho na tela",
+    "Garbage Collection": "Limpeza de memória",
+    "Unattributable": "Sem arquivo identificado"
   }
 }

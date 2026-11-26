@@ -13,6 +13,7 @@ export async function rodarLighthouse(endereco: string, porta: number, perfil: P
       port: porta,
       output: 'json',
       logLevel: 'error',
+      locale: 'pt', // títulos e explicações em português do Brasil (o 'pt' do Lighthouse é o brasileiro)
       onlyCategories: CATEGORIAS,
       disableStorageReset: true, // não apaga o login (Etapa 4)
     },

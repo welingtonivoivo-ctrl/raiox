@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { medir } from '../src/index.js'
 
-const pagina = readFileSync(fileURLToPath(new URL('../../../exemplos/basico/index.html', import.meta.url)))
+const exemplo = (nome: string) => readFileSync(fileURLToPath(new URL(`../../../exemplos/${nome}/index.html`, import.meta.url)))
+const pagina = exemplo('basico')
+const problemas = exemplo('problemas')
 let servidor: Server
 let endereco = ''
 

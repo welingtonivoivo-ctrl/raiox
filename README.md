@@ -27,10 +27,16 @@ pnpm install
 pnpm --filter @raiox/nucleo exec playwright-core install chromium
 pnpm medir https://example.com            # celular e computador
 pnpm medir https://example.com --precisao # 3 rodadas por perfil, usa a do meio
+pnpm medir https://example.com --saida minha-pasta --bruto  # escolhe a pasta e guarda o relatório original do Lighthouse
 pnpm tipos && pnpm teste
 ```
 
-Se o Chromium baixado não abrir, o Raio-X usa o Edge ou o Chrome do seu PC.
+Cada medição grava, em `raiox-saida/<site>-<data>/` (ou na pasta de `--saida`):
+- `relatorio.html`: notas, medidas e a lista **O que ajustar**, do maior impacto ao menor, com botões para copiar os textos;
+- `textos-ia.md`: um texto pronto para colar numa IA para cada item;
+- `resultado.json`: tudo em formato de dados.
+
+Se o Chromium baixado não abrir, o Raio-X usa o Edge ou o Chrome do seu PC. Em computador lento, a nota de desempenho no celular sai mais baixa que no PageSpeed do Google; o relatório avisa e marca essas notas com `*`.
 
 ## Usar com responsabilidade
 

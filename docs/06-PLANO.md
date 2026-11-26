@@ -17,6 +17,7 @@
 - Conversão das oportunidades/auditorias do Lighthouse em `Ajuste`, com lugar e ganho; fórmula de impacto; textos para IA.
 - Relatório HTML, arquivo Markdown de textos e JSON.
 - **Conferir**: colar 3 textos gerados no Claude e ver se a correção sugerida faz sentido para o problema.
+- **Feito em 26/11**: 42 testes (página de exemplo com problemas de propósito, relatório aberto no navegador, limpeza de segredos). Rodado num site real nosso. Conferência dos textos contra o código desse site: o de contraste leva direto à classe e à variável de cor certas (o seletor + as cores e a proporção vindas do axe bastam); o de JavaScript legado leva ao `browserslist`; o de JavaScript não usado aponta um arquivo de nome embaralhado — a dica passou a indicar o analisador do empacotador. Limite conhecido: em PC lento, os itens de "trabalho da thread principal" saem inflados (marcados com `*`).
 
 ## Etapa 3 — Linha de comando e skill
 - Comando `raiox analisar` (superfície) com resumo em português e as saídas.
