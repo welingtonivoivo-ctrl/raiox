@@ -42,7 +42,17 @@ raiox analisar localhost:3000 --local                  # o seu projeto rodando n
 raiox ajuda
 ```
 
-Toda análise fica guardada em `%APPDATA%\Raio-X\analises\<site>\<data>\`:
+**Páginas atrás do login** (só em site seu ou com autorização: `--sou-dono` confirma isso):
+
+```
+raiox entrar meusite.com.br/conta --sou-dono            # abre uma janela; você entra e aperta Enter (ou fecha a janela)
+raiox descobrir meusite.com.br/conta --sou-dono         # lista as páginas que seriam abertas e as que foram puladas
+raiox analisar meusite.com.br/conta --com-login --sou-dono --paginas 10
+raiox sessoes                                           # sessões salvas; "raiox sessoes apagar <site>" apaga
+```
+A senha nunca passa pelo Raio-X: só a sessão fica guardada, criptografada (AES-256-GCM), com a chave no cofre de senhas do Windows. O Raio-X só abre endereços (nunca clica nem envia formulário), no máximo 1 por segundo, e pula links com palavras como sair, excluir, cancelar, pagar e checkout (`--evitar` acrescenta outras). Cada endereço aberto fica no campo `registro` do `resultado.json`. Login pelo Google pode recusar a janela automatizada; nesse caso, entre por e-mail e senha ou código.
+
+Toda análise fica guardada em `%APPDATA%\Raio-X\analises\<site>\<data>\` (as sessões, em `%APPDATA%\Raio-X\sessoes\`):
 - `relatorio.html`: notas, medidas e a lista **O que ajustar**, do maior impacto ao menor, com botões para copiar os textos;
 - `textos-ia.md`: um texto pronto para colar numa IA para cada item;
 - `resultado.json`: tudo em formato de dados.

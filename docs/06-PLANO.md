@@ -29,6 +29,8 @@
 - `raiox entrar`, sessão criptografada, cofre do Windows, sessão vencida, descoberta de páginas com a lista de palavras perigosas e limite de velocidade.
 - Decidir o compartilhamento de sessão entre app e linha de comando (05-BACKEND §8).
 - **Conferir**: entrar no Street Server com a conta de teste; descobrir e medir ≥ 10 páginas fechadas; conferir no registro que nenhum endereço perigoso foi aberto; conferir que o arquivo da sessão não é legível sem o cofre.
+- **Feito em 27/11 (parte automática)**: `src/navegar/` (cofre trocável, sessão AES-256-GCM com o host como dado autenticado, `entrar` que termina com Enter ou ao fechar a janela, descoberta com palavras perigosas, registro e ritmo de 1 página/s); comandos `raiox entrar`, `descobrir`, `sessoes` e `analisar --com-login --paginas N`, todos exigindo `--sou-dono`. Medição logada: o navegador de medição passou a usar perfil temporário (`launchPersistentContext` + `setStorageState`), porque o Lighthouse abre a aba dele no contexto padrão — provado com o site de exemplo (`exemplos/login`), que registra cada pedido: nenhum endereço perigoso foi pedido. Antes de cada página o Raio-X confere se continua logado; depois, se o Lighthouse não foi parar na tela de entrada (`finalDisplayedUrl`). Lição: teste que estoura o prazo deixa o navegador rodando e derruba os seguintes — apagar processos com perfil `raiox-perfil-` antes de repetir.
+- **Falta (com o dono)**: conta de teste do Street Server; o dono roda `raiox entrar` e digita a senha; depois descobrir e medir ≥ 10 páginas, revisando a lista antes (salas de voz podem entrar sozinhas: `--evitar`).
 
 ## Etapa 5 — Segurança e conferências legais da superfície
 - **Segurança no site no ar**: chaves nos scripts e mapas de código, arquivos expostos (`/.env`, `/.git`, cópias do banco), cookies de sessão, conteúdo misto, cabeçalhos; nota de Segurança "parcial" e aviso vermelho.
@@ -52,6 +54,7 @@
 ## Etapa 8 — App de computador
 - Electron + React + Vite, visual Azul Neon, todas as telas do 04-DESIGN, núcleo em processo separado, mensagens do 05-BACKEND §7.
 - Histórico com gráfico e comparação; exportar HTML/PDF.
+- **Anotado na Etapa 4**: a recusa sem `souDono` (05-BACKEND §2) hoje está só no comando (`--sou-dono`). Levar a trava para o núcleo (`analisar`/`entrar`/`descobrirPaginas` recusam sem `souDono: true`) antes do app chamar essas funções.
 - **Conferir**: fluxos 2, 3, 4 e 5 do 03-FLUXO de ponta a ponta; o próprio app passa no axe-core sem falha alta; nenhuma barra de rolagem visível (conferido pelo estilo calculado de cada área rolável, sem captura de tela).
 
 ## Etapa 9 — Instalador e lançamento v0.1
