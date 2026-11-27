@@ -18,6 +18,7 @@ import {
   Registro,
   type EstadoDoNavegador,
 } from '../src/index.js'
+import type { Page } from 'playwright-core'
 // @ts-expect-error módulo de exemplo em JavaScript, sem tipos
 import { criarSiteComLogin } from '../../../exemplos/login/servidor.mjs'
 
@@ -76,17 +77,26 @@ describe('login no site de exemplo', () => {
     rmSync(pasta, { recursive: true, force: true })
   })
 
-  it('entrar: salva a sessão (sem a senha) e confere abrindo o painel', async () => {
+  // a "pessoa" entra: só nos testes o Raio-X preenche, nunca no comando
+  const fazerLogin = async (pagina: Page) => {
+    await pagina.fill('input[type=password]', 'senha-de-teste')
+    await Promise.all([pagina.waitForURL('**/painel'), pagina.click('button')])
+    await pagina.evaluate(() => localStorage.setItem('token_exemplo', 'ok'))
+    // a pessoa olha a página um pouco antes de fechar (dá tempo da foto periódica de 2 s)
+    await new Promise((ok) => setTimeout(ok, 2_500))
+  }
+
+  it('entrar fechando a janela: salva a última foto da sessão (sem a senha) e confirma', async () => {
     const r = await entrar(`${base}/painel`, {
       amb,
-      automatico: async (pagina) => {
-        // a "pessoa" entra: só neste teste o Raio-X preenche, nunca no comando
-        await pagina.fill('input[type=password]', 'senha-de-teste')
-        await Promise.all([pagina.waitForURL('**/painel'), pagina.click('button')])
-        await pagina.evaluate(() => localStorage.setItem('token_exemplo', 'ok'))
+      aoAbrirParaTeste: async (pagina) => {
+        await fazerLogin(pagina)
+        // fechar a janela = o navegador morre junto: a sessão tem que vir da última foto
+        await pagina.context().close()
       },
     })
-    expect(r).toMatchObject({ existe: true, valida: true })
+    expect(r).toMatchObject({ existe: true, valida: true, confirmada: true })
+    expect(new URL(r.entrada!).pathname).toBe('/painel')
     const salva = await lerSessao(base, { amb })
     expect(salva?.estado.cookies).toHaveLength(1)
     expect(JSON.stringify(salva)).not.toContain('senha-de-teste')
@@ -94,8 +104,36 @@ describe('login no site de exemplo', () => {
     expect((await conferirSessao(base, { amb })).valida).toBe(true)
   })
 
-  it('entrar sem fazer login: avisa que nada foi confirmado', async () => {
-    await expect(entrar(`${base}/painel`, { amb, automatico: async () => {} })).rejects.toThrow(ErroRaioX)
+  it('entrar com Enter ("já entrei") a partir da tela de entrada: guarda a área logada como entrada', async () => {
+    let jaEntrei = () => {}
+    const r = await entrar(`${base}/entrar`, {
+      amb,
+      jaEntrei: new Promise<void>((ok) => (jaEntrei = ok)),
+      aoAbrirParaTeste: async (pagina) => {
+        await fazerLogin(pagina)
+        jaEntrei()
+      },
+    })
+    expect(new URL(r.entrada!).pathname).toBe('/painel')
+    expect(r.confirmada).toBe(true)
+  })
+
+  it('só passou pela tela de entrada sem entrar: não salva', async () => {
+    await expect(
+      entrar(`${base}/entrar`, { amb, aoAbrirParaTeste: async (pagina) => void (await pagina.context().close()) }),
+    ).rejects.toThrow(ErroRaioX)
+  })
+
+  it('página pública: salva, mas avisa que não deu para confirmar o login', async () => {
+    const r = await entrar(`${base}/`, {
+      amb,
+      aoAbrirParaTeste: async (pagina) => {
+        await pagina.evaluate(() => localStorage.setItem('preferencia', 'x'))
+        await new Promise((ok) => setTimeout(ok, 2_500))
+        await pagina.context().close()
+      },
+    })
+    expect(r.confirmada).toBe(false)
   })
 
   it('descobre as páginas sem abrir nada perigoso', async () => {
@@ -141,6 +179,8 @@ describe('login no site de exemplo', () => {
 
   it('mede páginas fechadas logado (a medida é da página, não da tela de entrada)', async () => {
     const r = await medir([`${base}/perfil`, `${base}/local`], { permitirLocal: true, perfis: ['computador'], sessao })
+    // o navegador fica gravado com a versão (no perfil temporário ela vem pelo protocolo de depuração)
+    expect(r.navegador).toMatch(/^[a-z-]+ \d+\.\d+/)
     for (const p of r.paginas) {
       expect(p.erro).toBeUndefined()
       expect(p.comLogin).toBe(true)

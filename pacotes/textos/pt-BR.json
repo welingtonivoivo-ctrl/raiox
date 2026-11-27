@@ -34,7 +34,7 @@
     "semSessao": "Não há sessão salva para este site. Entre primeiro: raiox entrar <endereço> --sou-dono",
     "sessaoVencida": "Sua sessão venceu (o site mandou para a tela de entrada). Entre de novo: raiox entrar <endereço> --sou-dono",
     "nadaSalvo": "A janela fechou sem nenhum login guardado. Entre no site na janela antes de fechar.",
-    "entradaNaoConfirmada": "Depois de salvar, abri o site e ele ainda mostrou a tela de entrada. A sessão não foi guardada: entre de novo e espere a página da sua conta abrir antes de fechar a janela."
+    "entradaNaoConfirmada": "Não consegui confirmar o login: depois de salvar, a área logada ainda mostrou a tela de entrada (ou a janela só passou pela tela de entrada). Entre de novo e espere a página da sua conta abrir antes de fechar a janela."
   },
   "avisos": {
     "processadorLento": "Este computador está lento para o teste (força {forca}; o ideal é acima de 1000). A nota de desempenho no celular pode sair mais baixa que no PageSpeed do Google. Feche outros programas ou use a opção \"precisão\"."
@@ -282,7 +282,8 @@
       "abrindo": "Abrindo uma janela em {endereco}…",
       "instrucoes": "Entre no site na janela que abriu, do jeito de sempre (senha, código, Google…). A senha não passa pelo Raio-X.\nQuando a página da sua conta abrir, aperte Enter aqui ou feche a janela.",
       "conferindo": "Conferindo a sessão…",
-      "salva": "Sessão salva neste computador ({arquivo}). Agora dá para medir as páginas fechadas:\n  raiox analisar {endereco} --com-login --sou-dono"
+      "salva": "Sessão salva neste computador ({arquivo}). Agora dá para medir as páginas fechadas:\n  raiox analisar {endereco} --com-login --sou-dono",
+      "naoConfirmada": "Atenção: {entrada} abre até sem entrar (é uma página pública), então não deu para provar que o login funcionou. Se as páginas fechadas derem \"sessão venceu\", entre de novo usando o endereço da área logada (ex.: …/app, …/conta, …/painel)."
     },
     "sessoes": {
       "nenhuma": "Nenhuma sessão salva.",

@@ -54,6 +54,7 @@
 ## Etapa 8 — App de computador
 - Electron + React + Vite, visual Azul Neon, todas as telas do 04-DESIGN, núcleo em processo separado, mensagens do 05-BACKEND §7.
 - Histórico com gráfico e comparação; exportar HTML/PDF.
+- **Anotado na Etapa 4**: a recusa sem `souDono` (05-BACKEND §2) hoje está só no comando (`--sou-dono`). Levar a trava para o núcleo (`analisar`/`entrar`/`descobrirPaginas` recusam sem `souDono: true`) antes do app chamar essas funções.
 - **Conferir**: fluxos 2, 3, 4 e 5 do 03-FLUXO de ponta a ponta; o próprio app passa no axe-core sem falha alta; nenhuma barra de rolagem visível (conferido pelo estilo calculado de cada área rolável, sem captura de tela).
 
 ## Etapa 9 — Instalador e lançamento v0.1

@@ -33,6 +33,30 @@ export type OpcoesNavegador = {
  */
 const CANAIS = ['chromium', 'msedge', 'chrome'] as const
 
+class ErroSessaoNoNavegador extends Error {
+  constructor(public causa: unknown) {
+    super('não consegui colocar a sessão no navegador')
+  }
+}
+
+/**
+ * Versão do navegador (ex.: "158.0.4370.33"). No contexto persistente o Playwright não dá
+ * o objeto do navegador (browser() é null), então pergunta pelo protocolo de depuração.
+ */
+async function versaoDoNavegador(contexto: BrowserContext): Promise<string> {
+  const direto = contexto.browser()?.version()
+  if (direto) return direto
+  try {
+    const pagina = contexto.pages()[0] ?? (await contexto.newPage())
+    const cdp = await contexto.newCDPSession(pagina)
+    const v = (await cdp.send('Browser.getVersion')) as { product: string }
+    await cdp.detach().catch(() => {})
+    return v.product.split('/')[1] ?? v.product
+  } catch {
+    return '?'
+  }
+}
+
 /** Porta livre do sistema para a depuração do Chromium. */
 async function portaLivre(): Promise<number> {
   return new Promise((resolve, reject) => {
@@ -68,14 +92,17 @@ export async function abrirNavegador(op: OpcoesNavegador = {}): Promise<Navegado
         viewport: op.visivel ? null : { width: 1280, height: 800 },
         args: [`--remote-debugging-port=${porta}`, '--remote-debugging-address=127.0.0.1'],
       })
-      try {
-        if (op.sessao) await contexto.setStorageState(op.sessao as Parameters<BrowserContext['setStorageState']>[0])
-      } catch (e) {
-        await contexto.close().catch(() => {})
-        await apagarPerfil()
-        throw e
+      if (op.sessao) {
+        try {
+          await contexto.setStorageState(op.sessao as Parameters<BrowserContext['setStorageState']>[0])
+        } catch (e) {
+          await contexto.close().catch(() => {})
+          await apagarPerfil()
+          // erro da sessão, não do navegador: não tenta o próximo canal
+          throw new ErroSessaoNoNavegador(e)
+        }
       }
-      const versao = contexto.browser()?.version() ?? '?'
+      const versao = await versaoDoNavegador(contexto)
       return {
         contexto,
         porta,
@@ -87,6 +114,7 @@ export async function abrirNavegador(op: OpcoesNavegador = {}): Promise<Navegado
         },
       }
     } catch (e) {
+      if (e instanceof ErroSessaoNoNavegador) throw new ErroRaioX('sessaoIlegivel')
       await apagarPerfil()
       falhas.push(`${canal}: ${String(e).split('\n')[0]}`)
     }

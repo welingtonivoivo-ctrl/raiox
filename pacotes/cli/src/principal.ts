@@ -78,17 +78,20 @@ async function comandoEntrar(p: PedidoCli, s: Saidas): Promise<number> {
   const t = textos.cli.entrar
   escrever(s.err, preencher(t.abrindo, { endereco }))
   const enter = esperarEnter(s.entrada)
+  let r: Awaited<ReturnType<typeof entrar>>
   try {
-    await entrar(endereco, {
+    r = await entrar(endereco, {
       amb: s.amb,
-      jaEntrei: enter.promessa,
+      jaEntrei: enter.promessa.then(() => {
+        escrever(s.err, t.conferindo)
+      }),
       aoAndar: () => escrever(s.out, t.instrucoes),
     })
   } finally {
     enter.parar()
   }
-  escrever(s.err, t.conferindo)
-  escrever(s.out, preencher(t.salva, { arquivo: caminhoDaSessao(endereco, s.amb), endereco }))
+  escrever(s.out, preencher(t.salva, { arquivo: caminhoDaSessao(endereco, s.amb), endereco: r.entrada ?? endereco }))
+  if (!r.confirmada) escrever(s.err, preencher(t.naoConfirmada, { entrada: r.entrada ?? endereco }))
   return 0
 }
 
