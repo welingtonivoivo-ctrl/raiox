@@ -191,7 +191,9 @@ O núcleo confere tudo que chega (tipos, endereço, pasta existe) mesmo vindo da
 
 - Chave mestra aleatória de 32 bytes, criada na primeira execução e guardada no cofre do Windows (app: `safeStorage`; linha de comando: `@napi-rs/keyring`, entrada "Raio-X").
 - `sessoes/*.bin` e `chaves-ia.bin`: AES-256-GCM com nonce aleatório por gravação.
-- **Ponto a decidir na Etapa 4**: o `safeStorage` do Electron e o cofre usado pela linha de comando precisam ler a mesma chave para o app e a linha de comando compartilharem sessões. Se não der de forma simples, cada um guarda as suas e o README explica.
+- **Decidido na Etapa 4**: o app **não** usa o `safeStorage`; o processo principal do Electron usa o mesmo `@napi-rs/keyring` da linha de comando (entrada "Raio-X", conta "chave-mestra"). Assim a sessão salva por um vale no outro, sem conversão.
+- Arquivo da sessão: `versão (1 byte) | nonce (12) | tag (16) | dados`. O host do site entra como dado autenticado (AAD): um `.bin` copiado ou renomeado para outro site não abre. Dentro: `{ versao, entrada, salvaEm, estado }`, onde `estado` é o `storageState` do Playwright com cookies, localStorage e IndexedDB.
+- Testes usam `RAIOX_COFRE=memoria` (ligado no `vitest.config.ts`): nenhum teste toca o cofre de verdade. Se o cofre tiver um valor que não é uma chave de 32 bytes, o Raio-X avisa e não sobrescreve.
 
 ## 9. Linha de comando — saída e códigos
 

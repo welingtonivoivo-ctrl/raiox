@@ -39,7 +39,12 @@ export type OpcoesMedicao = {
   permitirLocal: boolean
   /** Pasta para guardar o relatório original do Lighthouse de cada rodada (lighthouse-<n>-<perfil>.json). */
   pastaBruta?: string
+  /** Sessão do login (storageState do Playwright) para medir páginas fechadas. */
+  sessao?: { cookies: unknown[]; origins: unknown[] }
 }
+
+/** Cada endereço que o Raio-X abriu (prova de que nada perigoso foi aberto). */
+export type EntradaDoRegistro = { quando: string; endereco: string; motivo: 'conferencia' | 'descoberta' | 'medicao' }
 
 /** Blocos da lista "O que ajustar". Os legais e de código chegam nas Etapas 5 e 6. */
 export type BlocoAjuste =
@@ -99,4 +104,8 @@ export type ResultadoMedicao = {
   paginas: ResultadoPagina[]
   /** Lista "O que ajustar", do maior impacto ao menor. */
   ajustes: Ajuste[]
+  /** Análise com login: endereços abertos (descoberta, conferência e medição), em ordem. */
+  registro?: EntradaDoRegistro[]
+  /** Links que a descoberta encontrou e não abriu, com o motivo (perigosa: sair, arquivo: .pdf…). */
+  puladas?: { endereco: string; texto: string; motivo: string }[]
 }

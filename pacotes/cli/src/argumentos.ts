@@ -2,7 +2,8 @@
 import textos from '@raiox/textos/pt-BR.json' with { type: 'json' }
 import { preencher, type Perfil } from '@raiox/nucleo'
 
-export type Comando = 'analisar' | 'ajuda' | 'versao'
+export type Comando = 'analisar' | 'entrar' | 'descobrir' | 'sessoes' | 'ajuda' | 'versao'
+export type AcaoSessoes = 'listar' | 'conferir' | 'apagar'
 
 export type PedidoCli = {
   comando: Comando
@@ -17,6 +18,17 @@ export type PedidoCli = {
   textos?: string
   minimoDesempenho?: number
   semCor: boolean
+  /** Confirmação "este site é meu ou tenho autorização" (obrigatória para login). */
+  souDono: boolean
+  comLogin: boolean
+  /** Com --com-login: descobrir e medir até N páginas fechadas (além das digitadas). */
+  paginas?: number
+  /** Descoberta: máximo de páginas e de níveis. */
+  limite?: number
+  niveis?: number
+  /** Palavras perigosas a mais (não abrir links com elas). */
+  evitar: string[]
+  acaoSessoes: AcaoSessoes
 }
 
 type CodigoErro = keyof typeof textos.cli.erros
@@ -31,24 +43,24 @@ export class ErroCli extends Error {
   }
 }
 
-/** Opções e comandos que já estão no plano, mas chegam em etapas futuras. */
+/** Opções que já estão no plano, mas chegam em etapas futuras. */
 const FUTURAS: Record<string, number> = {
-  '--com-login': 4,
-  '--paginas': 4,
   '--completo': 6,
   '--repo': 6,
   '--ia': 7,
-  entrar: 4,
-  sessoes: 4,
 }
 
-/** Aceitas sem efeito por enquanto (a skill e os documentos já usam). */
-const SEM_EFEITO = new Set(['--sem-ia', '--sou-dono'])
+/** Aceita sem efeito por enquanto (a skill e os documentos já usam). */
+const SEM_EFEITO = new Set(['--sem-ia'])
 
-const COM_VALOR = new Set(['--perfil', '--saida', '--textos', '--minimo-desempenho'])
+const COM_VALOR = new Set(['--perfil', '--saida', '--textos', '--minimo-desempenho', '--paginas', '--limite', '--niveis', '--evitar'])
 
 const COMANDOS: Record<string, Comando> = {
   analisar: 'analisar',
+  entrar: 'entrar',
+  descobrir: 'descobrir',
+  sessoes: 'sessoes',
+  'sessões': 'sessoes',
   ajuda: 'ajuda',
   '--ajuda': 'ajuda',
   '-h': 'ajuda',
@@ -64,6 +76,12 @@ function perfisDe(valor: string): Perfil[] {
   if (valor === 'ambos') return ['celular', 'computador']
   if (valor === 'celular' || valor === 'computador') return [valor]
   throw new ErroCli('perfilInvalido', { valor })
+}
+
+function inteiro(opcao: string, v: string, min: number, max: number): number {
+  const n = Number(v)
+  if (!Number.isInteger(n) || n < min || n > max) throw new ErroCli('numeroInvalido', { opcao, min, max })
+  return n
 }
 
 /**
@@ -86,16 +104,25 @@ export function lerArgumentos(args: string[]): PedidoCli {
     permitirLocal: false,
     bruto: false,
     semCor: false,
+    souDono: false,
+    comLogin: false,
+    evitar: [],
+    acaoSessoes: 'listar',
   }
   if (!args.length) return pedido
   const [primeiro, ...resto] = args as [string, ...string[]]
-  if (primeiro in FUTURAS) throw new ErroCli('emBreve', { opcao: `raiox ${primeiro}`, etapa: FUTURAS[primeiro]! })
   const comando = COMANDOS[primeiro]
   if (!comando) throw new ErroCli('comandoDesconhecido', { comando: primeiro })
   pedido.comando = comando
-  if (comando !== 'analisar') return pedido
+  if (comando === 'ajuda' || comando === 'versao') return pedido
 
-  for (let i = 0; i < resto.length; i++) {
+  let inicio = 0
+  if (comando === 'sessoes' && (resto[0] === 'apagar' || resto[0] === 'conferir' || resto[0] === 'listar')) {
+    pedido.acaoSessoes = resto[0]
+    inicio = 1
+  }
+
+  for (let i = inicio; i < resto.length; i++) {
     const bruto = resto[i]!
     // aceita --opcao=valor e --opcao valor
     const igual = bruto.startsWith('--') ? bruto.indexOf('=') : -1
@@ -128,35 +155,55 @@ export function lerArgumentos(args: string[]): PedidoCli {
       case '--sem-cor':
         pedido.semCor = true
         break
+      case '--sou-dono':
+        pedido.souDono = true
+        break
+      case '--com-login':
+        pedido.comLogin = true
+        break
       case '--json': {
-        // valor opcional: sem arquivo (ou seguido de endereço/opção) = escrever na tela
+        // valor opcional: só um nome terminado em .json é arquivo; sem ele, o resultado vai para a tela
         if (valorJunto !== undefined) pedido.json = valorJunto || '-'
         else {
           const v = resto[i + 1]
-          if (v !== undefined && !v.startsWith('-') && !/^https?:\/\//i.test(v)) {
+          if (v !== undefined && /\.json$/i.test(v)) {
             pedido.json = v
             i++
           } else pedido.json = '-'
         }
         break
       }
-      default:
+      default: {
         if (!COM_VALOR.has(opcao)) throw new ErroCli('opcaoDesconhecida', { opcao })
-        {
-          const v = proximoValor()
-          if (opcao === '--perfil') pedido.perfis = perfisDe(v)
-          else if (opcao === '--saida') {
-            if (/\.pdf$/i.test(v)) throw new ErroCli('pdfAindaNao')
-            pedido.saida = v
-          } else if (opcao === '--textos') pedido.textos = v
-          else {
-            const n = Number(v.replace(',', '.'))
-            if (!Number.isFinite(n) || n < 0 || n > 100) throw new ErroCli('minimoInvalido')
-            pedido.minimoDesempenho = n
-          }
+        const v = proximoValor()
+        if (opcao === '--perfil') pedido.perfis = perfisDe(v)
+        else if (opcao === '--saida') {
+          if (/\.pdf$/i.test(v)) throw new ErroCli('pdfAindaNao')
+          pedido.saida = v
+        } else if (opcao === '--textos') pedido.textos = v
+        else if (opcao === '--paginas') pedido.paginas = inteiro(opcao, v, 1, 200)
+        else if (opcao === '--limite') pedido.limite = inteiro(opcao, v, 1, 200)
+        else if (opcao === '--niveis') pedido.niveis = inteiro(opcao, v, 1, 5)
+        else if (opcao === '--evitar') pedido.evitar.push(...v.split(',').map((x) => x.trim()).filter(Boolean))
+        else {
+          const n = Number(v.replace(',', '.'))
+          if (!Number.isFinite(n) || n < 0 || n > 100) throw new ErroCli('minimoInvalido')
+          pedido.minimoDesempenho = n
         }
+      }
     }
   }
+
+  if (pedido.comando === 'sessoes') {
+    if (pedido.acaoSessoes !== 'listar' && pedido.enderecos.length !== 1) throw new ErroCli('umEndereco', { comando: `sessoes ${pedido.acaoSessoes}` })
+    return pedido
+  }
   if (!pedido.enderecos.length) throw new ErroCli('semEndereco')
+  if ((pedido.comando === 'entrar' || pedido.comando === 'descobrir') && pedido.enderecos.length !== 1) {
+    throw new ErroCli('umEndereco', { comando: pedido.comando })
+  }
+  if (pedido.paginas !== undefined && !pedido.comLogin) throw new ErroCli('paginasSemLogin')
+  const precisaDono = pedido.comando === 'entrar' || pedido.comando === 'descobrir' || pedido.comLogin
+  if (precisaDono && !pedido.souDono) throw new ErroCli('precisaSouDono')
   return pedido
 }

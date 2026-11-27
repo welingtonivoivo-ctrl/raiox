@@ -1,8 +1,30 @@
+import { mkdtemp, rm } from 'node:fs/promises'
 import { createServer } from 'node:net'
-import type { Browser } from 'playwright-core'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import type { BrowserContext } from 'playwright-core'
+import type { EstadoDoNavegador } from '../navegar/sessao.js'
 import { ErroRaioX } from './endereco.js'
 
-export type NavegadorDeTeste = { navegador: Browser; porta: number; canal: string; fechar: () => Promise<void> }
+export type NavegadorDeTeste = {
+  /**
+   * Contexto persistente: é o contexto padrão do navegador, o mesmo em que o Lighthouse
+   * abre a aba dele pela porta de depuração — por isso a sessão do login colocada aqui vale na medição.
+   */
+  contexto: BrowserContext
+  porta: number
+  canal: string
+  /** Versão do navegador (ex.: "158.0.4370.33"). */
+  versao: string
+  fechar: () => Promise<void>
+}
+
+export type OpcoesNavegador = {
+  /** Sessão do login para colocar no navegador antes de medir. */
+  sessao?: EstadoDoNavegador
+  /** Janela visível (para a pessoa entrar no site). */
+  visivel?: boolean
+}
 
 /**
  * Ordem de tentativa: Chromium baixado pelo Playwright, depois Edge e Chrome
@@ -26,11 +48,10 @@ async function portaLivre(): Promise<number> {
 }
 
 /**
- * Abre o Chromium do Playwright com porta de depuração, para o Lighthouse
- * se conectar no mesmo navegador (docs/02-TRD.md §3). Na Etapa 4 a sessão
- * do login será colocada neste navegador antes de medir.
+ * Abre o navegador com um perfil temporário (apagado ao fechar) e porta de depuração,
+ * para o Lighthouse se conectar no mesmo navegador (docs/02-TRD.md §3).
  */
-export async function abrirNavegador(): Promise<NavegadorDeTeste> {
+export async function abrirNavegador(op: OpcoesNavegador = {}): Promise<NavegadorDeTeste> {
   const forcado = process.env.RAIOX_NAVEGADOR
   const canais = forcado ? [forcado] : [...CANAIS]
   // carregado só aqui, para não pesar quem só gera relatório ou lê a ajuda
@@ -38,14 +59,35 @@ export async function abrirNavegador(): Promise<NavegadorDeTeste> {
   const falhas: string[] = []
   for (const canal of canais) {
     const porta = await portaLivre()
+    const perfil = await mkdtemp(join(tmpdir(), 'raiox-perfil-'))
+    const apagarPerfil = () => rm(perfil, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }).catch(() => {})
     try {
-      const navegador = await chromium.launch({
+      const contexto = await chromium.launchPersistentContext(perfil, {
         channel: canal, // Chromium completo no modo sem janela novo (o Lighthouse precisa dele)
-        headless: true,
+        headless: !op.visivel,
+        viewport: op.visivel ? null : { width: 1280, height: 800 },
         args: [`--remote-debugging-port=${porta}`, '--remote-debugging-address=127.0.0.1'],
       })
-      return { navegador, porta, canal, fechar: () => navegador.close() }
+      try {
+        if (op.sessao) await contexto.setStorageState(op.sessao as Parameters<BrowserContext['setStorageState']>[0])
+      } catch (e) {
+        await contexto.close().catch(() => {})
+        await apagarPerfil()
+        throw e
+      }
+      const versao = contexto.browser()?.version() ?? '?'
+      return {
+        contexto,
+        porta,
+        canal,
+        versao,
+        fechar: async () => {
+          await contexto.close().catch(() => {})
+          await apagarPerfil()
+        },
+      }
     } catch (e) {
+      await apagarPerfil()
       falhas.push(`${canal}: ${String(e).split('\n')[0]}`)
     }
   }

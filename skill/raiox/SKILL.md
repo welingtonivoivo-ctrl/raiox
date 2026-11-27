@@ -44,12 +44,37 @@ raiox analisar <endereço> --json --sem-cor
 - `--perfil celular` (ou `computador`) mede só um aparelho e fica mais rápido; `--precisao` faz 3 rodadas e usa a do
   meio (nota mais estável, 3× mais lento).
 - Endereço do próprio computador (`localhost`, `192.168…`) só com `--local`, e só quando for o projeto da pessoa.
-- **Ainda não existem** (chegam nas próximas versões): login (`raiox entrar`, `--com-login`), modo completo
-  (`--completo`, `--repo`) e IA própria (`--ia`). Se pedirem, diga que ainda não está disponível e faça a análise das
-  páginas públicas.
+- **Ainda não existem** (chegam nas próximas versões): modo completo (`--completo`, `--repo`) e IA própria (`--ia`).
+  Se pedirem, diga que ainda não está disponível e faça a análise das páginas.
 - Só analise sites públicos ou da própria pessoa. O Raio-X só abre páginas: não clica, não envia formulários.
 
 O formato do resultado está em [referencias/resultado.md](referencias/resultado.md).
+
+## 2b. Páginas atrás do login
+
+Só com autorização: **antes de qualquer comando com `--sou-dono`, pergunte à pessoa** se o site é dela ou se ela tem
+autorização para testá-lo. Nunca coloque `--sou-dono` por conta própria.
+
+1. **Entrar** (a pessoa faz, não você): peça para ela rodar no terminal dela
+   ```
+   raiox entrar <endereço da área logada> --sou-dono
+   ```
+   Abre uma janela do navegador; ela entra do jeito de sempre e aperta Enter (ou fecha a janela). **Nunca peça, digite
+   ou leia a senha** — o Raio-X guarda só a sessão, criptografada, com a chave no cofre do Windows.
+   Login pelo Google pode recusar a janela automatizada: nesse caso, entrar por e-mail/senha ou código.
+2. **Ver as páginas antes de medir**: `raiox descobrir <endereço> --sou-dono` lista as páginas que seriam abertas e as
+   que foram puladas (sair, excluir, pagar…). Mostre a lista à pessoa. Se houver páginas que fazem algo só de abrir
+   (entrar numa sala de voz, aceitar convite, iniciar chamada), use `--evitar voz,chamada,convite`.
+3. **Medir logado**:
+   ```
+   raiox analisar <endereço> --com-login --sou-dono --paginas 10 --perfil computador --json --sem-cor
+   ```
+   `--paginas N` descobre e mede até N páginas; sem ele, mede só os endereços digitados. 10 páginas nos dois aparelhos
+   levam de 20 a 30 minutos num PC fraco: prefira `--perfil computador` e rode em segundo plano.
+4. Se aparecer "sua sessão venceu", peça para a pessoa entrar de novo (passo 1). `raiox sessoes` lista as sessões e
+   `raiox sessoes apagar <site>` apaga.
+5. O resultado traz `registro` (cada endereço aberto) e `puladas` (links não abertos e o motivo): use para mostrar que
+   nada perigoso foi aberto.
 
 ## 3. Explicar
 

@@ -22,3 +22,14 @@ export function pastaDaAnalise(site: string, quando: Date, amb: NodeJS.ProcessEn
   const carimbo = `${quando.getFullYear()}${p(quando.getMonth() + 1)}${p(quando.getDate())}-${p(quando.getHours())}${p(quando.getMinutes())}${p(quando.getSeconds())}`
   return join(pastaDeDados(amb), 'analises', nome, carimbo)
 }
+
+/** Nome seguro de arquivo/pasta para o site (host com porta; "site" se não der). */
+export function nomeDoHost(site: string): string {
+  let nome = 'site'
+  try {
+    nome = new URL(site).host
+  } catch {
+    // fica "site"
+  }
+  return nome.replace(/[^\w.-]/g, '_')
+}

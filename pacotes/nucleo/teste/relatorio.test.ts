@@ -82,7 +82,7 @@ describe('relatório HTML', () => {
   it('abre no navegador sem erro e os botões de copiar funcionam', async () => {
     const nav = await abrirNavegador()
     try {
-      const contexto = await nav.navegador.newContext()
+      const contexto = nav.contexto
       await contexto.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'https://example.com' }).catch(() => {})
       const pagina = await contexto.newPage()
       const erros: string[] = []

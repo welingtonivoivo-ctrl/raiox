@@ -13,6 +13,7 @@
     "teste": "vitest run"
   },
   "dependencies": {
+    "@napi-rs/keyring": "2.1.2",
     "@raiox/textos": "workspace:*",
     "lighthouse": "13.6.0",
     "playwright-core": "1.65.1"

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { completarEndereco, ErroCli, lerArgumentos } from '../src/argumentos.js'
-import { pastaDaAnalise, pastaDeDados } from '../src/pastas.js'
+import { pastaDaAnalise, pastaDeDados } from '@raiox/nucleo'
 
 describe('lerArgumentos', () => {
   it('sem nada mostra a ajuda; aceita versao e ajuda com apelidos', () => {
@@ -32,6 +32,20 @@ describe('lerArgumentos', () => {
     expect(p.json).toBe('-')
     expect(p.enderecos).toEqual(['https://a.com'])
     expect(lerArgumentos(['analisar', 'https://a.com', '--json', '--precisao']).json).toBe('-')
+    // endereço sem protocolo depois de --json continua sendo endereço (só .json é arquivo)
+    const q = lerArgumentos(['analisar', '--json', 'meusite.com.br'])
+    expect(q.json).toBe('-')
+    expect(q.enderecos).toEqual(['https://meusite.com.br'])
+  })
+
+  it('login: entrar, descobrir, sessoes e --com-login', () => {
+    expect(lerArgumentos(['entrar', 'meusite.com.br', '--sou-dono'])).toMatchObject({ comando: 'entrar', enderecos: ['https://meusite.com.br'], souDono: true })
+    expect(lerArgumentos(['descobrir', 'a.com', '--sou-dono', '--limite', '20', '--niveis', '2', '--evitar', 'voz, chamada'])).toMatchObject({
+      comando: 'descobrir', limite: 20, niveis: 2, evitar: ['voz', 'chamada'],
+    })
+    expect(lerArgumentos(['analisar', 'a.com', '--com-login', '--sou-dono', '--paginas', '10'])).toMatchObject({ comLogin: true, paginas: 10 })
+    expect(lerArgumentos(['sessoes'])).toMatchObject({ comando: 'sessoes', acaoSessoes: 'listar' })
+    expect(lerArgumentos(['sessoes', 'apagar', 'a.com'])).toMatchObject({ acaoSessoes: 'apagar', enderecos: ['https://a.com'] })
   })
 
   it('erros claros', () => {
@@ -51,8 +65,15 @@ describe('lerArgumentos', () => {
     expect(erro(['analisar', 'https://a.com', '--minimo-desempenho', '120'])).toBe('minimoInvalido')
     expect(erro(['analisar', 'https://a.com', '--saida'])).toBe('faltaValor')
     expect(erro(['analisar', 'https://a.com', '--saida', 'r.pdf'])).toBe('pdfAindaNao')
-    expect(erro(['analisar', 'https://a.com', '--com-login'])).toBe('emBreve')
-    expect(erro(['entrar', 'https://a.com'])).toBe('emBreve')
+    // login exige a confirmação --sou-dono (a skill nunca põe sozinha)
+    expect(erro(['analisar', 'https://a.com', '--com-login'])).toBe('precisaSouDono')
+    expect(erro(['entrar', 'https://a.com'])).toBe('precisaSouDono')
+    expect(erro(['descobrir', 'https://a.com'])).toBe('precisaSouDono')
+    expect(erro(['entrar', 'a.com', 'b.com', '--sou-dono'])).toBe('umEndereco')
+    expect(erro(['sessoes', 'apagar'])).toBe('umEndereco')
+    expect(erro(['analisar', 'a.com', '--paginas', '5'])).toBe('paginasSemLogin')
+    expect(erro(['analisar', 'a.com', '--com-login', '--sou-dono', '--paginas', '0'])).toBe('numeroInvalido')
+    expect(erro(['analisar', 'https://a.com', '--completo'])).toBe('emBreve')
   })
 })
 
